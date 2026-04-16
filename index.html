@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Markdown 格式转换器</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/turndown@7.1.3/dist/turndown.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/turndown-plugin-gfm@1.0.2/dist/turndown-plugin-gfm.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-secondary: #f9fafb;
+    --surface: #ffffff;
+    --surface-hover: #f3f4f6;
+    --border: #e5e7eb;
+    --border-focus: #6366f1;
+    --text: #1f2937;
+    --text-secondary: #6b7280;
+    --text-tertiary: #9ca3af;
+    --accent: #6366f1;
+    --accent-light: #eef2ff;
+    --accent-hover: #4f46e5;
+    --accent-glow: rgba(99, 102, 241, 0.08);
+    --success: #10b981;
+    --success-light: #ecfdf5;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --danger-light: #fef2f2;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-xs: 6px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+    --transition: all 0.15s ease;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    background: var(--bg-secondary);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== Header ===== */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    border-radius: var(--radius-xs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+  }
+
+  .header h1 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .header-center {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  /* ===== Buttons ===== */
+  .btn {
+    height: 34px;
+    padding: 0 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+  }
+
+  .btn:hover {
+    background: var(--surface-hover);
+    border-color: #d1d5db;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn:active { transform: scale(0.98); }
+
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    box-shadow: 0 1px 3px rgba(99, 102, 241, 0.3);
+  }
+
+  .btn-ghost {
+    border-color: transparent;
+    color: var(--text-secondary);
+  }
+
+  .btn-ghost:hover {
+    background: var(--surface-hover);
+    border-color: transparent;
+    color: var(--text);
+  }
+
+  .btn-danger { color: var(--danger); }
+  .btn-danger:hover { background: var(--danger-light); border-color: #fca5a5; }
+
+  /* ===== Mode Tabs ===== */
+  .mode-tabs {
+    display: flex;
+    gap: 2px;
+    background: var(--bg-secondary);
+    padding: 3px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+  }
+
+  .mode-tab {
+    height: 30px;
+    padding: 0 12px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+  }
+
+  .mode-tab.active {
+    background: var(--surface);
+    color: var(--accent);
+    border-color: var(--border);
+    box-shadow: var(--shadow-sm);
+    font-weight: 600;
+  }
+
+  .mode-tab:not(.active):hover {
+    color: var(--text);
+    background: rgba(0,0,0,0.03);
+  }
+
+  /* ===== Main Layout ===== */
+  .main {
+    display: flex;
+    height: calc(100vh - 56px);
+  }
+
+  /* ===== Panels ===== */
+  .panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: var(--surface);
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    height: 40px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .panel-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .panel-title .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .panel-actions { display: flex; gap: 2px; }
+
+  .panel-btn {
+    height: 28px;
+    padding: 0 8px;
+    border: none;
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .panel-btn:hover {
+    color: var(--text);
+    background: var(--surface-hover);
+  }
+
+  /* ===== Divider ===== */
+  .divider {
+    width: 1px;
+    background: var(--border);
+    position: relative;
+    cursor: col-resize;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+
+  .divider:hover, .divider.dragging { background: var(--accent); }
+
+  .divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -3px;
+    width: 7px;
+    height: 32px;
+    transform: translateY(-50%);
+    border-radius: 4px;
+    background: var(--border);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .divider:hover::after { opacity: 1; background: var(--accent); }
+
+  /* ===== Editor ===== */
+  .editor-wrap {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .editor {
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    background: var(--surface);
+    color: var(--text);
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    font-size: 13.5px;
+    line-height: 1.7;
+    tab-size: 2;
+  }
+
+  .editor::placeholder { color: var(--text-tertiary); }
+
+  /* ===== Preview / Rich Editor ===== */
+  .preview-wrap {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--surface);
+  }
+
+  .preview {
+    padding: 24px 28px;
+    min-height: 100%;
+    outline: none;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  /* Markdown rendered styles */
+  .preview h1 { font-size: 1.85em; font-weight: 700; margin: 1em 0 0.5em; padding-bottom: 0.3em; border-bottom: 2px solid var(--border); color: #111827; }
+  .preview h2 { font-size: 1.45em; font-weight: 600; margin: 1em 0 0.4em; padding-bottom: 0.25em; border-bottom: 1px solid var(--border); color: #1f2937; }
+  .preview h3 { font-size: 1.2em; font-weight: 600; margin: 0.9em 0 0.4em; color: #374151; }
+  .preview h4 { font-size: 1.05em; font-weight: 600; margin: 0.7em 0 0.3em; color: #4b5563; }
+  .preview p { margin: 0.6em 0; }
+  .preview a { color: var(--accent); text-decoration: none; }
+  .preview a:hover { text-decoration: underline; }
+  .preview strong { font-weight: 600; color: #111827; }
+  .preview blockquote {
+    margin: 1em 0;
+    padding: 10px 18px;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-light);
+    border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+    color: var(--text-secondary);
+  }
+  .preview blockquote p { margin: 0.25em 0; }
+  .preview code {
+    background: #f1f5f9;
+    padding: 1.5px 5px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.88em;
+    color: #c026d3;
+  }
+  .preview pre {
+    margin: 1em 0;
+    padding: 14px 18px;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow-x: auto;
+  }
+  .preview pre code {
+    background: none;
+    padding: 0;
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .preview ul, .preview ol { margin: 0.5em 0; padding-left: 1.8em; }
+  .preview li { margin: 0.25em 0; }
+  .preview li::marker { color: var(--accent); }
+  .preview hr { border: none; height: 1px; background: var(--border); margin: 1.5em 0; }
+  .preview table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: 14px; }
+  .preview th, .preview td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; }
+  .preview th { background: var(--bg-secondary); font-weight: 600; font-size: 13px; color: var(--text-secondary); }
+  .preview tr:hover td { background: #fafbfc; }
+  .preview img { max-width: 100%; border-radius: var(--radius-sm); }
+  .preview input[type="checkbox"] { margin-right: 6px; accent-color: var(--accent); }
+
+  /* ===== PDF Drop Zone ===== */
+  .pdf-zone {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .pdf-zone.dragover {
+    background: var(--accent-light);
+    border-color: var(--accent);
+  }
+
+  .pdf-zone-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--accent-light);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 16px;
+    transition: var(--transition);
+  }
+
+  .pdf-zone:hover .pdf-zone-icon {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+  }
+
+  .pdf-zone h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .pdf-zone p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+
+  .pdf-zone .btn { pointer-events: none; }
+
+  .pdf-progress {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .pdf-progress.active { display: flex; }
+
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--bg-secondary);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #8b5cf6);
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  .progress-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  /* ===== Toast ===== */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 13px;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-left: 3px solid var(--success); }
+  .toast.error { border-left: 3px solid var(--danger); }
+
+  /* ===== Status Bar ===== */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 16px;
+    height: 28px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+  }
+
+  /* ===== Scrollbar ===== */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+  /* ===== File Input Hidden ===== */
+  .file-input-hidden { display: none; }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .main { flex-direction: column; }
+    .divider { width: 100%; height: 1px; cursor: row-resize; }
+    .divider::after { display: none; }
+    .header { padding: 0 12px; }
+    .header h1 { font-size: 14px; }
+    .btn { height: 30px; padding: 0 10px; font-size: 12px; }
+    .mode-tab { font-size: 11px; padding: 0 8px; }
+  }
+</style>
+</head>
+<body>
+
+<input type="file" id="pdf-file-input" class="file-input-hidden" accept=".pdf">
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">M</div>
+    <h1>Markdown 格式转换器</h1>
+  </div>
+  <div class="header-center">
+    <div class="mode-tabs">
+      <button class="mode-tab active" onclick="switchMode('md2html')" id="tab-md2html">Markdown → 预览</button>
+      <button class="mode-tab" onclick="switchMode('html2md')" id="tab-html2md">富文本 → Markdown</button>
+      <button class="mode-tab" onclick="switchMode('pdf2md')" id="tab-pdf2md">PDF → Markdown</button>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-primary" onclick="exportPDF()">
+      <span>📄</span> 导出 PDF
+    </button>
+    <button class="btn" onclick="copyOutput()">
+      <span>📋</span> 复制
+    </button>
+    <button class="btn btn-ghost btn-danger" onclick="clearAll()">
+      <span>🗑</span> 清空
+    </button>
+  </div>
+</div>
+
+<div class="main">
+  <!-- Left Panel -->
+  <div class="panel" id="left-panel">
+    <div class="panel-header">
+      <div class="panel-title">
+        <span class="dot"></span>
+        <span id="left-label">MARKDOWN 输入</span>
+      </div>
+      <div class="panel-actions">
+        <button class="panel-btn" onclick="loadSample()" id="btn-sample">📝 示例</button>
+        <button class="panel-btn" onclick="pasteFromClipboard()" id="btn-paste">📋 粘贴</button>
+      </div>
+    </div>
+
+    <!-- Mode 1: Markdown input -->
+    <div class="editor-wrap" id="md-editor-wrap">
+      <textarea class="editor" id="md-editor" placeholder="在这里粘贴或输入 Markdown 内容...&#10;&#10;支持：&#10;  # 标题&#10;  **粗体** *斜体*&#10;  - 列表&#10;  > 引用&#10;  | 表格 |&#10;  [链接](url)"></textarea>
+    </div>
+
+    <!-- Mode 2: Rich text input -->
+    <div class="preview-wrap" id="rich-editor-wrap" style="display:none;">
+      <div class="preview" id="rich-editor" contenteditable="true" style="min-height:100%;cursor:text;"></div>
+    </div>
+
+    <!-- Mode 3: PDF upload -->
+    <div id="pdf-upload-wrap" style="display:none;flex:1;overflow-y:auto;">
+      <div class="pdf-zone" id="pdf-zone" onclick="document.getElementById('pdf-file-input').click();">
+        <div class="pdf-zone-icon">📑</div>
+        <h3>上传 PDF 文件</h3>
+        <p>拖拽 PDF 到这里，或点击选择文件</p>
+        <div class="btn" style="pointer-events:none;">选择 PDF 文件</div>
+        <div class="pdf-progress" id="pdf-progress">
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+          <div class="progress-text" id="progress-text">正在解析...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-bar" id="left-status">
+      <span id="left-chars">字符: 0</span>
+      <span id="left-lines">行数: 0</span>
+      <span id="left-words">字数: 0</span>
+    </div>
+  </div>
+
+  <div class="divider" id="divider"></div>
+
+  <!-- Right Panel -->
+  <div class="panel" id="right-panel">
+    <div class="panel-header">
+      <div class="panel-title">
+        <span class="dot" style="background:var(--success)"></span>
+        <span id="right-label">渲染预览</span>
+      </div>
+      <div class="panel-actions">
+        <button class="panel-btn" onclick="copyOutput()">📋 复制结果</button>
+      </div>
+    </div>
+
+    <!-- Mode 1: HTML Preview -->
+    <div class="preview-wrap" id="preview-wrap">
+      <div class="preview" id="preview"></div>
+    </div>
+
+    <!-- Mode 2 & 3: Markdown output -->
+    <div class="editor-wrap" id="md-output-wrap" style="display:none;">
+      <textarea class="editor" id="md-output" readonly placeholder="转换后的 Markdown 将在这里显示..."></textarea>
+    </div>
+
+    <div class="status-bar" id="right-status">
+      <span id="right-chars">字符: 0</span>
+      <span id="right-lines">行数: 0</span>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== State =====
+let currentMode = 'md2html';
+
+// ===== Marked =====
+marked.setOptions({
+  highlight: function(code, lang) {
+    if (lang && hljs.getLanguage(lang)) return hljs.highlight(code, { language: lang }).value;
+    return hljs.highlightAuto(code).value;
+  },
+  breaks: true,
+  gfm: true
+});
+
+// ===== Turndown =====
+const turndownService = new TurndownService({
+  headingStyle: 'atx',
+  codeBlockStyle: 'fenced',
+  bulletListMarker: '-',
+  emDelimiter: '*',
+  strongDelimiter: '**',
+  hr: '---'
+});
+if (typeof turndownPluginGfm !== 'undefined') {
+  turndownService.use(turndownPluginGfm.gfm);
+}
+
+// ===== PDF.js =====
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// ===== Elements =====
+const mdEditor = document.getElementById('md-editor');
+const mdEditorWrap = document.getElementById('md-editor-wrap');
+const richEditorWrap = document.getElementById('rich-editor-wrap');
+const richEditor = document.getElementById('rich-editor');
+const pdfUploadWrap = document.getElementById('pdf-upload-wrap');
+const previewWrap = document.getElementById('preview-wrap');
+const preview = document.getElementById('preview');
+const mdOutputWrap = document.getElementById('md-output-wrap');
+const mdOutput = document.getElementById('md-output');
+
+// ===== Mode Switching =====
+function switchMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+
+  // Hide all input areas
+  mdEditorWrap.style.display = 'none';
+  richEditorWrap.style.display = 'none';
+  pdfUploadWrap.style.display = 'none';
+  previewWrap.style.display = 'none';
+  mdOutputWrap.style.display = 'none';
+
+  const btnSample = document.getElementById('btn-sample');
+  const btnPaste = document.getElementById('btn-paste');
+
+  if (mode === 'md2html') {
+    document.getElementById('tab-md2html').classList.add('active');
+    document.getElementById('left-label').textContent = 'MARKDOWN 输入';
+    document.getElementById('right-label').textContent = '渲染预览';
+    mdEditorWrap.style.display = '';
+    previewWrap.style.display = '';
+    btnSample.style.display = '';
+    btnPaste.style.display = '';
+    renderMarkdown();
+  } else if (mode === 'html2md') {
+    document.getElementById('tab-html2md').classList.add('active');
+    document.getElementById('left-label').textContent = '富文本输入';
+    document.getElementById('right-label').textContent = 'MARKDOWN 输出';
+    richEditorWrap.style.display = '';
+    mdOutputWrap.style.display = '';
+    btnSample.style.display = '';
+    btnPaste.style.display = '';
+    convertToMarkdown();
+  } else if (mode === 'pdf2md') {
+    document.getElementById('tab-pdf2md').classList.add('active');
+    document.getElementById('left-label').textContent = 'PDF 文件';
+    document.getElementById('right-label').textContent = 'MARKDOWN 输出';
+    pdfUploadWrap.style.display = 'flex';
+    mdOutputWrap.style.display = '';
+    btnSample.style.display = 'none';
+    btnPaste.style.display = 'none';
+  }
+  updateStats();
+}
+
+// ===== Markdown → HTML =====
+function renderMarkdown() {
+  const md = mdEditor.value;
+  preview.innerHTML = marked.parse(md);
+  preview.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+  updateStats();
+}
+
+// ===== HTML → Markdown =====
+function convertToMarkdown() {
+  const html = richEditor.innerHTML;
+  if (!html || html === '<br>' || !html.trim()) {
+    mdOutput.value = '';
+    updateStats();
+    return;
+  }
+  try {
+    mdOutput.value = turndownService.turndown(html);
+  } catch (e) {
+    mdOutput.value = '// 转换出错: ' + e.message;
+  }
+  updateStats();
+}
+
+// ===== PDF → Markdown =====
+async function parsePDF(file) {
+  const pdfZone = document.getElementById('pdf-zone');
+  const pdfProgress = document.getElementById('pdf-progress');
+  const progressFill = document.getElementById('progress-fill');
+  const progressText = document.getElementById('progress-text');
+
+  pdfProgress.classList.add('active');
+  progressFill.style.width = '0%';
+  progressText.textContent = '正在加载 PDF...';
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const totalPages = pdf.numPages;
+    let fullText = '';
+
+    progressText.textContent = `共 ${totalPages} 页，正在解析...`;
+
+    for (let i = 1; i <= totalPages; i++) {
+      const page = await pdf.getPage(i);
+      const textContent = await page.getTextContent();
+
+      // Smart text reconstruction
+      const items = textContent.items;
+      let pageText = '';
+      let lastY = null;
+      let lastX = null;
+      let lastFontSize = null;
+      let lastItem = null;
+
+      for (const item of items) {
+        const y = Math.round(item.transform[5]);
+        const x = item.transform[4];
+        const fontSize = Math.round(item.height);
+        const text = item.str;
+
+        if (lastY !== null && Math.abs(y - lastY) > 3) {
+          // New line detected
+          const yGap = Math.abs(y - lastY);
+          if (yGap > fontSize * 1.8) {
+            pageText += '\n\n'; // Paragraph break
+          } else {
+            pageText += '\n';
+          }
+        } else if (lastItem && lastX !== null) {
+          // Same line - check spacing
+          const expectedEnd = lastX + (lastItem.width || 0);
+          const gap = x - expectedEnd;
+          if (gap > fontSize * 0.3) {
+            pageText += ' ';
+          }
+        }
+
+        pageText += text;
+        lastY = y;
+        lastX = x;
+        lastFontSize = fontSize;
+        lastItem = item;
+      }
+
+      if (totalPages > 1 && i < totalPages) {
+        fullText += pageText + '\n\n---\n\n';
+      } else {
+        fullText += pageText;
+      }
+
+      const pct = Math.round((i / totalPages) * 100);
+      progressFill.style.width = pct + '%';
+      progressText.textContent = `解析中... ${i}/${totalPages} 页 (${pct}%)`;
+    }
+
+    // Post-process: try to detect headings and format as markdown
+    fullText = postProcessPdfText(fullText);
+
+    mdOutput.value = fullText;
+    progressFill.style.width = '100%';
+    progressText.textContent = `完成！共 ${totalPages} 页，${fullText.length} 字符`;
+
+    setTimeout(() => {
+      pdfProgress.classList.remove('active');
+    }, 2000);
+
+    updateStats();
+    showToast(`PDF 解析完成 (${totalPages} 页)`, 'success');
+  } catch (e) {
+    progressText.textContent = '解析失败: ' + e.message;
+    progressFill.style.width = '0%';
+    showToast('PDF 解析失败: ' + e.message, 'error');
+  }
+}
+
+function postProcessPdfText(text) {
+  let lines = text.split('\n');
+  let result = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i].trim();
+    if (!line) {
+      result.push('');
+      continue;
+    }
+
+    // Simple heuristic: short lines (< 60 chars) that are followed by longer content
+    // and don't end with punctuation might be headings
+    const nextNonEmpty = lines.slice(i + 1).find(l => l.trim());
+    const isShort = line.length < 60;
+    const noPunctEnd = !/[.。,，;；:：!！?？)）\]】"]$/.test(line);
+    const nextIsLonger = nextNonEmpty && nextNonEmpty.trim().length > line.length;
+
+    if (isShort && noPunctEnd && nextIsLonger && line.length > 1 && !line.startsWith('#') && !line.startsWith('-') && !line.startsWith('---')) {
+      // Likely a heading
+      if (line.length < 20) {
+        result.push('## ' + line);
+      } else {
+        result.push('### ' + line);
+      }
+    } else {
+      result.push(line);
+    }
+  }
+
+  // Clean up excessive blank lines
+  return result.join('\n').replace(/\n{4,}/g, '\n\n\n');
+}
+
+// ===== PDF Drop & File Input =====
+const pdfZone = document.getElementById('pdf-zone');
+const pdfFileInput = document.getElementById('pdf-file-input');
+
+pdfZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  pdfZone.classList.add('dragover');
+});
+
+pdfZone.addEventListener('dragleave', () => {
+  pdfZone.classList.remove('dragover');
+});
+
+pdfZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  pdfZone.classList.remove('dragover');
+  const files = e.dataTransfer.files;
+  if (files.length > 0 && files[0].type === 'application/pdf') {
+    parsePDF(files[0]);
+  } else {
+    showToast('请上传 PDF 文件', 'error');
+  }
+});
+
+pdfFileInput.addEventListener('change', (e) => {
+  if (e.target.files.length > 0) {
+    parsePDF(e.target.files[0]);
+    e.target.value = ''; // Reset for re-upload
+  }
+});
+
+// ===== Event Listeners =====
+mdEditor.addEventListener('input', () => {
+  if (currentMode === 'md2html') renderMarkdown();
+});
+
+richEditor.addEventListener('input', () => {
+  if (currentMode === 'html2md') convertToMarkdown();
+});
+
+richEditor.addEventListener('paste', () => {
+  setTimeout(() => {
+    if (currentMode === 'html2md') convertToMarkdown();
+  }, 50);
+});
+
+// ===== Stats =====
+function updateStats() {
+  if (currentMode === 'md2html') {
+    const t = mdEditor.value;
+    document.getElementById('left-chars').textContent = '字符: ' + t.length;
+    document.getElementById('left-lines').textContent = '行数: ' + (t ? t.split('\n').length : 0);
+    document.getElementById('left-words').textContent = '字数: ' + countWords(t);
+    const h = preview.textContent || '';
+    document.getElementById('right-chars').textContent = '字符: ' + h.length;
+    document.getElementById('right-lines').textContent = '字数: ' + countWords(h);
+  } else if (currentMode === 'html2md') {
+    const h = richEditor.textContent || '';
+    document.getElementById('left-chars').textContent = '字符: ' + h.length;
+    document.getElementById('left-lines').textContent = '字数: ' + countWords(h);
+    document.getElementById('left-words').textContent = '';
+    const m = mdOutput.value;
+    document.getElementById('right-chars').textContent = '字符: ' + m.length;
+    document.getElementById('right-lines').textContent = '行数: ' + (m ? m.split('\n').length : 0);
+  } else {
+    const m = mdOutput.value;
+    document.getElementById('left-chars').textContent = '';
+    document.getElementById('left-lines').textContent = '';
+    document.getElementById('left-words').textContent = '';
+    document.getElementById('right-chars').textContent = '字符: ' + m.length;
+    document.getElementById('right-lines').textContent = '行数: ' + (m ? m.split('\n').length : 0);
+  }
+}
+
+function countWords(text) {
+  if (!text) return 0;
+  const cn = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+  const en = (text.replace(/[\u4e00-\u9fff]/g, '').match(/\b\w+\b/g) || []).length;
+  return cn + en;
+}
+
+// ===== Actions =====
+function copyOutput() {
+  if (currentMode === 'md2html') {
+    const html = preview.innerHTML;
+    const blob = new Blob([html], { type: 'text/html' });
+    const plainBlob = new Blob([preview.textContent], { type: 'text/plain' });
+    navigator.clipboard.write([
+      new ClipboardItem({ 'text/html': blob, 'text/plain': plainBlob })
+    ]).then(() => showToast('已复制渲染后的 HTML', 'success'))
+      .catch(() => navigator.clipboard.writeText(preview.textContent).then(() => showToast('已复制纯文本', 'success')));
+  } else {
+    navigator.clipboard.writeText(mdOutput.value)
+      .then(() => showToast('已复制 Markdown', 'success'))
+      .catch(() => showToast('复制失败', 'error'));
+  }
+}
+
+async function pasteFromClipboard() {
+  try {
+    if (currentMode === 'md2html') {
+      mdEditor.value = await navigator.clipboard.readText();
+      renderMarkdown();
+    } else if (currentMode === 'html2md') {
+      const items = await navigator.clipboard.read();
+      for (const item of items) {
+        if (item.types.includes('text/html')) {
+          richEditor.innerHTML = await (await item.getType('text/html')).text();
+          convertToMarkdown();
+          showToast('已粘贴', 'success');
+          return;
+        }
+      }
+      richEditor.textContent = await navigator.clipboard.readText();
+      convertToMarkdown();
+    }
+    showToast('已粘贴', 'success');
+  } catch(e) {
+    showToast('无法读取剪贴板，请手动粘贴', 'error');
+  }
+}
+
+function clearAll() {
+  mdEditor.value = '';
+  preview.innerHTML = '';
+  richEditor.innerHTML = '';
+  mdOutput.value = '';
+  updateStats();
+  showToast('已清空', 'success');
+}
+
+function loadSample() {
+  if (currentMode === 'md2html') {
+    mdEditor.value = `# Markdown 格式转换器\n\n## 功能特性\n\n这是一个 **强大** 的 Markdown 双向转换工具，支持以下功能：\n\n- ✅ Markdown → 富文本预览\n- ✅ 富文本 → Markdown 转换\n- ✅ PDF 文件解析为 Markdown\n- ✅ 导出 PDF\n- ✅ 代码高亮 & GFM 表格\n\n## 代码示例\n\n\`\`\`javascript\nfunction greet(name) {\n  return \`Hello, \${name}!\`;\n}\n\`\`\`\n\n## 表格\n\n| 功能 | 状态 | 引擎 |\n|------|------|------|\n| Markdown 渲染 | ✅ | marked.js |\n| HTML 转 MD | ✅ | Turndown |\n| PDF 解析 | ✅ | PDF.js |\n| PDF 导出 | ✅ | html2pdf.js |\n\n> 让 Markdown 的编写和转换变得简单高效。\n\n---\n\n*Markdown 格式转换器* 🚀`;
+    renderMarkdown();
+    showToast('已加载示例', 'success');
+  } else if (currentMode === 'html2md') {
+    richEditor.innerHTML = '<h1>示例富文本</h1><p>这是 <strong>加粗</strong> 和 <em>斜体</em> 文本。</p><ul><li>列表项 1</li><li>列表项 2</li></ul><blockquote><p>引用文字</p></blockquote>';
+    convertToMarkdown();
+    showToast('已加载示例', 'success');
+  }
+}
+
+// ===== PDF Export =====
+function exportPDF() {
+  showToast('正在生成 PDF...', 'success');
+  const container = document.createElement('div');
+  container.style.cssText = 'padding:40px 48px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;color:#1a1a1a;line-height:1.8;max-width:780px;';
+
+  let content = '';
+  if (currentMode === 'md2html') {
+    content = preview.innerHTML;
+  } else {
+    content = marked.parse(mdOutput.value);
+  }
+
+  container.innerHTML = `<style>
+    h1{font-size:24px;font-weight:700;margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid #e5e7eb;color:#111}
+    h2{font-size:20px;font-weight:600;margin:24px 0 12px;padding-bottom:6px;border-bottom:1px solid #e5e7eb;color:#111}
+    h3{font-size:16px;font-weight:600;margin:20px 0 8px;color:#333}
+    p{margin:8px 0;font-size:14px}
+    strong{font-weight:600}
+    blockquote{margin:12px 0;padding:8px 16px;border-left:4px solid #6366f1;background:#f5f3ff;border-radius:0 8px 8px 0}
+    code{background:#f3f4f6;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px}
+    pre{background:#f8f9fa;border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin:12px 0;overflow-x:auto}
+    pre code{background:none;padding:0;font-size:12px}
+    table{border-collapse:collapse;width:100%;margin:12px 0}
+    th,td{padding:8px 12px;border:1px solid #e5e7eb;text-align:left;font-size:13px}
+    th{background:#f9fafb;font-weight:600}
+    ul,ol{margin:8px 0;padding-left:24px}
+    li{margin:4px 0;font-size:14px}
+    hr{border:none;height:1px;background:#e5e7eb;margin:20px 0}
+    a{color:#6366f1;text-decoration:none}
+    img{max-width:100%;border-radius:8px}
+  </style>${content}`;
+
+  document.body.appendChild(container);
+  html2pdf().set({
+    margin: [12, 12, 12, 12],
+    filename: 'markdown-export.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, logging: false },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  }).from(container).save().then(() => {
+    document.body.removeChild(container);
+    showToast('PDF 已导出', 'success');
+  }).catch(err => {
+    document.body.removeChild(container);
+    showToast('PDF 导出失败: ' + err.message, 'error');
+  });
+}
+
+// ===== Toast =====
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('toast');
+  toast.className = 'toast ' + type;
+  toast.innerHTML = (type === 'success' ? '✅' : '❌') + ' ' + msg;
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ===== Resizable Divider =====
+const divider = document.getElementById('divider');
+const leftPanel = document.getElementById('left-panel');
+const rightPanel = document.getElementById('right-panel');
+let isDragging = false;
+
+divider.addEventListener('mousedown', () => {
+  isDragging = true;
+  divider.classList.add('dragging');
+  document.body.style.cursor = 'col-resize';
+  document.body.style.userSelect = 'none';
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  const rect = document.querySelector('.main').getBoundingClientRect();
+  const pct = Math.max(20, Math.min(80, ((e.clientX - rect.left) / rect.width) * 100));
+  leftPanel.style.flex = 'none';
+  leftPanel.style.width = pct + '%';
+  rightPanel.style.flex = 'none';
+  rightPanel.style.width = (100 - pct) + '%';
+});
+
+document.addEventListener('mouseup', () => {
+  if (isDragging) {
+    isDragging = false;
+    divider.classList.remove('dragging');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  }
+});
+
+// ===== Keyboard Shortcuts =====
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); exportPDF(); }
+  if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'c') { e.preventDefault(); copyOutput(); }
+});
+
+// ===== Init =====
+updateStats();
+</script>
+</body>
+</html>
