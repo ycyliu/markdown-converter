@@ -378,6 +378,53 @@
   .preview img { max-width: 100%; border-radius: var(--radius-sm); }
   .preview input[type="checkbox"] { margin-right: 6px; accent-color: var(--accent); }
 
+  /* ===== Editor drag overlay ===== */
+  .editor-wrap { position: relative; }
+  .drag-overlay {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(99,102,241,0.06);
+    border: 2px dashed var(--accent);
+    border-radius: var(--radius-sm);
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent);
+    pointer-events: none;
+  }
+  .editor-wrap.dragover .drag-overlay { display: flex; }
+
+  /* ===== Image Zone ===== */
+  .img-zone {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .img-zone.dragover { background: var(--accent-light); }
+  .img-zone-icon {
+    width: 64px; height: 64px;
+    background: var(--accent-light);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; margin-bottom: 16px;
+    transition: var(--transition);
+  }
+  .img-zone:hover .img-zone-icon {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(99,102,241,0.15);
+  }
+  .img-zone h3 { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .img-zone p { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; text-align: center; line-height: 1.6; }
+  .img-preview { max-width: 100%; max-height: 200px; border-radius: var(--radius-sm); margin-top: 16px; border: 1px solid var(--border); display: none; }
+
   /* ===== PDF Drop Zone ===== */
   .pdf-zone {
     flex: 1;
@@ -523,6 +570,7 @@
 <body>
 
 <input type="file" id="pdf-file-input" class="file-input-hidden" accept=".pdf">
+<input type="file" id="img-file-input" class="file-input-hidden" accept="image/*" multiple>
 
 <div class="header">
   <div class="header-left">
@@ -534,6 +582,7 @@
       <button class="mode-tab active" onclick="switchMode('md2html')" id="tab-md2html">Markdown → 预览</button>
       <button class="mode-tab" onclick="switchMode('html2md')" id="tab-html2md">富文本 → Markdown</button>
       <button class="mode-tab" onclick="switchMode('pdf2md')" id="tab-pdf2md">PDF → Markdown</button>
+      <button class="mode-tab" onclick="switchMode('img2md')" id="tab-img2md">图片 → Markdown</button>
     </div>
   </div>
   <div class="header-actions">
@@ -565,7 +614,8 @@
 
     <!-- Mode 1: Markdown input -->
     <div class="editor-wrap" id="md-editor-wrap">
-      <textarea class="editor" id="md-editor" placeholder="在这里粘贴或输入 Markdown 内容...&#10;&#10;支持：&#10;  # 标题&#10;  **粗体** *斜体*&#10;  - 列表&#10;  > 引用&#10;  | 表格 |&#10;  [链接](url)"></textarea>
+      <div class="drag-overlay">📷 松开以插入图片</div>
+      <textarea class="editor" id="md-editor" placeholder="在这里粘贴或输入 Markdown 内容...&#10;&#10;支持：&#10;  # 标题&#10;  **粗体** *斜体*&#10;  - 列表&#10;  > 引用&#10;  | 表格 |&#10;  [链接](url)&#10;&#10;💡 可直接粘贴或拖拽图片到这里"></textarea>
     </div>
 
     <!-- Mode 2: Rich text input -->
@@ -584,6 +634,17 @@
           <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
           <div class="progress-text" id="progress-text">正在解析...</div>
         </div>
+      </div>
+    </div>
+
+    <!-- Mode 4: Image upload -->
+    <div id="img-upload-wrap" style="display:none;flex:1;overflow-y:auto;">
+      <div class="img-zone" id="img-zone" onclick="document.getElementById('img-file-input').click();">
+        <div class="img-zone-icon">🖼️</div>
+        <h3>上传图片</h3>
+        <p>拖拽图片到这里，点击选择图片，或直接 Ctrl+V 粘贴<br>支持 PNG / JPG / GIF / WebP，可多选</p>
+        <div class="btn" style="pointer-events:none;">选择图片文件</div>
+        <img class="img-preview" id="img-preview">
       </div>
     </div>
 
@@ -663,6 +724,7 @@ const mdEditorWrap = document.getElementById('md-editor-wrap');
 const richEditorWrap = document.getElementById('rich-editor-wrap');
 const richEditor = document.getElementById('rich-editor');
 const pdfUploadWrap = document.getElementById('pdf-upload-wrap');
+const imgUploadWrap = document.getElementById('img-upload-wrap');
 const previewWrap = document.getElementById('preview-wrap');
 const preview = document.getElementById('preview');
 const mdOutputWrap = document.getElementById('md-output-wrap');
@@ -677,6 +739,7 @@ function switchMode(mode) {
   mdEditorWrap.style.display = 'none';
   richEditorWrap.style.display = 'none';
   pdfUploadWrap.style.display = 'none';
+  imgUploadWrap.style.display = 'none';
   previewWrap.style.display = 'none';
   mdOutputWrap.style.display = 'none';
 
@@ -706,6 +769,14 @@ function switchMode(mode) {
     document.getElementById('left-label').textContent = 'PDF 文件';
     document.getElementById('right-label').textContent = 'MARKDOWN 输出';
     pdfUploadWrap.style.display = 'flex';
+    mdOutputWrap.style.display = '';
+    btnSample.style.display = 'none';
+    btnPaste.style.display = 'none';
+  } else if (mode === 'img2md') {
+    document.getElementById('tab-img2md').classList.add('active');
+    document.getElementById('left-label').textContent = '图片文件';
+    document.getElementById('right-label').textContent = 'MARKDOWN 输出';
+    imgUploadWrap.style.display = 'flex';
     mdOutputWrap.style.display = '';
     btnSample.style.display = 'none';
     btnPaste.style.display = 'none';
@@ -890,8 +961,116 @@ pdfZone.addEventListener('drop', (e) => {
 pdfFileInput.addEventListener('change', (e) => {
   if (e.target.files.length > 0) {
     parsePDF(e.target.files[0]);
-    e.target.value = ''; // Reset for re-upload
+    e.target.value = '';
   }
+});
+
+// ===== Image → Markdown =====
+function imageToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleImageFiles(files, insertIntoEditor) {
+  const imageFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
+  if (imageFiles.length === 0) return;
+
+  let mdSnippets = [];
+  for (const file of imageFiles) {
+    const base64 = await imageToBase64(file);
+    const name = file.name.replace(/\.[^.]+$/, '') || 'image';
+    mdSnippets.push(`![${name}](${base64})`);
+  }
+
+  const mdText = mdSnippets.join('\n\n');
+
+  if (insertIntoEditor) {
+    // Insert at cursor in Markdown editor
+    const editor = mdEditor;
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const before = editor.value.substring(0, start);
+    const after = editor.value.substring(end);
+    const insertion = (before && !before.endsWith('\n') ? '\n\n' : '') + mdText + '\n\n';
+    editor.value = before + insertion + after;
+    editor.selectionStart = editor.selectionEnd = start + insertion.length;
+    renderMarkdown();
+    showToast(`已插入 ${imageFiles.length} 张图片`, 'success');
+  } else {
+    // Append to mdOutput (img2md mode)
+    const existing = mdOutput.value;
+    mdOutput.value = (existing ? existing + '\n\n' : '') + mdText;
+    // Show preview of last image
+    const imgPreview = document.getElementById('img-preview');
+    imgPreview.src = await imageToBase64(imageFiles[imageFiles.length - 1]);
+    imgPreview.style.display = 'block';
+    updateStats();
+    showToast(`已转换 ${imageFiles.length} 张图片`, 'success');
+  }
+}
+
+// Image zone: drag & drop + click
+const imgZone = document.getElementById('img-zone');
+const imgFileInput = document.getElementById('img-file-input');
+
+imgZone.addEventListener('dragover', (e) => { e.preventDefault(); imgZone.classList.add('dragover'); });
+imgZone.addEventListener('dragleave', () => imgZone.classList.remove('dragover'));
+imgZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  imgZone.classList.remove('dragover');
+  handleImageFiles(e.dataTransfer.files, false);
+});
+
+imgFileInput.addEventListener('change', (e) => {
+  if (e.target.files.length > 0) {
+    handleImageFiles(e.target.files, false);
+    e.target.value = '';
+  }
+});
+
+// Markdown editor: paste image
+mdEditor.addEventListener('paste', (e) => {
+  const items = e.clipboardData?.items;
+  if (!items) return;
+  const imageItems = Array.from(items).filter(i => i.type.startsWith('image/'));
+  if (imageItems.length === 0) return;
+  e.preventDefault();
+  const files = imageItems.map(i => i.getAsFile()).filter(Boolean);
+  handleImageFiles(files, true);
+});
+
+// Markdown editor: drag & drop image
+mdEditorWrap.addEventListener('dragover', (e) => {
+  if (e.dataTransfer.types.includes('Files')) {
+    e.preventDefault();
+    mdEditorWrap.classList.add('dragover');
+  }
+});
+mdEditorWrap.addEventListener('dragleave', (e) => {
+  if (!mdEditorWrap.contains(e.relatedTarget)) mdEditorWrap.classList.remove('dragover');
+});
+mdEditorWrap.addEventListener('drop', (e) => {
+  e.preventDefault();
+  mdEditorWrap.classList.remove('dragover');
+  const files = e.dataTransfer.files;
+  const imageFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
+  if (imageFiles.length > 0) handleImageFiles(imageFiles, true);
+});
+
+// Image zone: paste (when in img2md mode)
+document.addEventListener('paste', (e) => {
+  if (currentMode !== 'img2md') return;
+  const items = e.clipboardData?.items;
+  if (!items) return;
+  const imageItems = Array.from(items).filter(i => i.type.startsWith('image/'));
+  if (imageItems.length === 0) return;
+  e.preventDefault();
+  const files = imageItems.map(i => i.getAsFile()).filter(Boolean);
+  handleImageFiles(files, false);
 });
 
 // ===== Event Listeners =====
