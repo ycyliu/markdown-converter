@@ -15,556 +15,139 @@
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
   :root {
-    --bg: #ffffff;
-    --bg-secondary: #f9fafb;
-    --surface: #ffffff;
-    --surface-hover: #f3f4f6;
-    --border: #e5e7eb;
-    --border-focus: #6366f1;
-    --text: #1f2937;
-    --text-secondary: #6b7280;
-    --text-tertiary: #9ca3af;
-    --accent: #6366f1;
-    --accent-light: #eef2ff;
-    --accent-hover: #4f46e5;
-    --accent-glow: rgba(99, 102, 241, 0.08);
-    --success: #10b981;
-    --success-light: #ecfdf5;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --danger-light: #fef2f2;
-    --radius: 12px;
-    --radius-sm: 8px;
-    --radius-xs: 6px;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-    --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
-    --transition: all 0.15s ease;
+    --bg:#fff;--bg2:#f9fafb;--surface:#fff;--surface-hover:#f3f4f6;
+    --border:#e5e7eb;--text:#1f2937;--text2:#6b7280;--text3:#9ca3af;
+    --accent:#6366f1;--accent-light:#eef2ff;--accent-hover:#4f46e5;
+    --success:#10b981;--danger:#ef4444;--danger-light:#fef2f2;
+    --radius:12px;--radius-sm:8px;--radius-xs:6px;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.05);
+    --shadow-lg:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);
+    --tr:all .15s ease;
   }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;background:var(--bg2);color:var(--text);min-height:100vh;overflow-x:hidden}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* Header */
+  .header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm)}
+  .header-left{display:flex;align-items:center;gap:10px}
+  .logo{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),#8b5cf6);border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff}
+  .header h1{font-size:16px;font-weight:600;color:var(--text)}
+  .header-actions{display:flex;gap:6px}
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-    background: var(--bg-secondary);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+  /* Buttons */
+  .btn{height:34px;padding:0 14px;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--surface);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;transition:var(--tr);display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+  .btn:hover{background:var(--surface-hover);border-color:#d1d5db;box-shadow:var(--shadow-sm)}
+  .btn:active{transform:scale(.98)}
+  .btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn-primary:hover{background:var(--accent-hover);border-color:var(--accent-hover);box-shadow:0 1px 3px rgba(99,102,241,.3)}
+  .btn-ghost{border-color:transparent;color:var(--text2)}
+  .btn-ghost:hover{background:var(--surface-hover);border-color:transparent;color:var(--text)}
+  .btn-danger{color:var(--danger)}
+  .btn-danger:hover{background:var(--danger-light);border-color:#fca5a5}
 
-  /* ===== Header ===== */
-  .header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: var(--shadow-sm);
-  }
+  /* Tabs */
+  .mode-tabs{display:flex;gap:2px;background:var(--bg2);padding:3px;border-radius:var(--radius-sm);border:1px solid var(--border)}
+  .mode-tab{height:30px;padding:0 12px;border:1px solid transparent;border-radius:var(--radius-xs);background:0;color:var(--text2);font-size:12.5px;font-weight:500;cursor:pointer;transition:var(--tr);white-space:nowrap}
+  .mode-tab.active{background:var(--surface);color:var(--accent);border-color:var(--border);box-shadow:var(--shadow-sm);font-weight:600}
+  .mode-tab:not(.active):hover{color:var(--text);background:rgba(0,0,0,.03)}
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  /* Layout */
+  .main{display:flex;height:calc(100vh - 56px)}
+  .panel{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--surface)}
+  .panel-header{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:40px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+  .panel-title{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
+  .panel-title .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  .panel-actions{display:flex;gap:2px}
+  .panel-btn{height:28px;padding:0 8px;border:none;border-radius:var(--radius-xs);background:0;color:var(--text2);font-size:12px;cursor:pointer;transition:var(--tr);display:flex;align-items:center;gap:3px}
+  .panel-btn:hover{color:var(--text);background:var(--surface-hover)}
 
-  .logo {
-    width: 32px;
-    height: 32px;
-    background: linear-gradient(135deg, var(--accent), #8b5cf6);
-    border-radius: var(--radius-xs);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    font-weight: 700;
-    color: white;
-  }
+  /* Divider */
+  .divider{width:1px;background:var(--border);position:relative;cursor:col-resize;flex-shrink:0;transition:background .15s}
+  .divider:hover,.divider.dragging{background:var(--accent)}
 
-  .header h1 {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text);
-  }
+  /* Editor */
+  .editor-wrap{flex:1;position:relative;overflow:hidden}
+  .editor{width:100%;height:100%;padding:20px;background:var(--surface);color:var(--text);border:none;outline:none;resize:none;font-family:'JetBrains Mono','Fira Code','SF Mono','Cascadia Code',Consolas,monospace;font-size:13.5px;line-height:1.7;tab-size:2}
+  .editor::placeholder{color:var(--text3)}
 
-  .header-center {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  /* Drag overlay */
+  .drag-overlay{display:none;position:absolute;inset:0;background:rgba(99,102,241,.06);border:2px dashed var(--accent);border-radius:var(--radius-sm);z-index:10;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:var(--accent);pointer-events:none}
+  .editor-wrap.dragover .drag-overlay{display:flex}
 
-  .header-actions {
-    display: flex;
-    gap: 6px;
-  }
+  /* OCR inline bar */
+  .ocr-bar{display:none;align-items:center;gap:10px;padding:6px 16px;background:var(--accent-light);border-bottom:1px solid #c7d2fe;font-size:12px;color:var(--accent);flex-shrink:0}
+  .ocr-bar.active{display:flex}
+  .ocr-bar .ocr-progress{flex:1;height:4px;background:#e0e7ff;border-radius:2px;overflow:hidden}
+  .ocr-bar .ocr-fill{height:100%;background:var(--accent);border-radius:2px;width:0%;transition:width .3s ease}
+  .ocr-bar .ocr-text{white-space:nowrap;font-weight:500}
+  .ocr-bar .ocr-cancel{background:none;border:none;color:var(--accent);cursor:pointer;font-size:14px;padding:0 4px}
+  .ocr-bar .ocr-cancel:hover{color:var(--danger)}
 
-  /* ===== Buttons ===== */
-  .btn {
-    height: 34px;
-    padding: 0 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-xs);
-    background: var(--surface);
-    color: var(--text);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    white-space: nowrap;
-  }
+  /* Preview */
+  .preview-wrap{flex:1;overflow-y:auto;background:var(--surface)}
+  .preview{padding:24px 28px;min-height:100%;outline:none;font-size:15px;line-height:1.7;color:var(--text)}
+  .preview h1{font-size:1.85em;font-weight:700;margin:1em 0 .5em;padding-bottom:.3em;border-bottom:2px solid var(--border);color:#111827}
+  .preview h2{font-size:1.45em;font-weight:600;margin:1em 0 .4em;padding-bottom:.25em;border-bottom:1px solid var(--border);color:#1f2937}
+  .preview h3{font-size:1.2em;font-weight:600;margin:.9em 0 .4em;color:#374151}
+  .preview h4{font-size:1.05em;font-weight:600;margin:.7em 0 .3em;color:#4b5563}
+  .preview p{margin:.6em 0}
+  .preview a{color:var(--accent);text-decoration:none}
+  .preview a:hover{text-decoration:underline}
+  .preview strong{font-weight:600;color:#111827}
+  .preview blockquote{margin:1em 0;padding:10px 18px;border-left:3px solid var(--accent);background:var(--accent-light);border-radius:0 var(--radius-xs) var(--radius-xs) 0;color:var(--text2)}
+  .preview blockquote p{margin:.25em 0}
+  .preview code{background:#f1f5f9;padding:1.5px 5px;border-radius:4px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:.88em;color:#c026d3}
+  .preview pre{margin:1em 0;padding:14px 18px;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-sm);overflow-x:auto}
+  .preview pre code{background:none;padding:0;color:var(--text);font-size:13px;line-height:1.6}
+  .preview ul,.preview ol{margin:.5em 0;padding-left:1.8em}
+  .preview li{margin:.25em 0}
+  .preview li::marker{color:var(--accent)}
+  .preview hr{border:none;height:1px;background:var(--border);margin:1.5em 0}
+  .preview table{border-collapse:collapse;width:100%;margin:1em 0;font-size:14px}
+  .preview th,.preview td{padding:8px 12px;border:1px solid var(--border);text-align:left}
+  .preview th{background:var(--bg2);font-weight:600;font-size:13px;color:var(--text2)}
+  .preview tr:hover td{background:#fafbfc}
+  .preview img{max-width:100%;border-radius:var(--radius-sm)}
+  .preview input[type="checkbox"]{margin-right:6px;accent-color:var(--accent)}
 
-  .btn:hover {
-    background: var(--surface-hover);
-    border-color: #d1d5db;
-    box-shadow: var(--shadow-sm);
-  }
+  /* PDF / upload zones */
+  .upload-zone{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;cursor:pointer;transition:var(--tr)}
+  .upload-zone.dragover{background:var(--accent-light)}
+  .upload-zone-icon{width:64px;height:64px;background:var(--accent-light);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:16px;transition:var(--tr)}
+  .upload-zone:hover .upload-zone-icon{transform:scale(1.05);box-shadow:0 4px 12px rgba(99,102,241,.15)}
+  .upload-zone h3{font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px}
+  .upload-zone p{font-size:13px;color:var(--text2);margin-bottom:16px;text-align:center;line-height:1.6}
+  .upload-zone .btn{pointer-events:none}
+  .upload-progress{display:none;flex-direction:column;align-items:center;gap:12px;width:100%;max-width:320px;margin-top:16px}
+  .upload-progress.active{display:flex}
+  .progress-bar{width:100%;height:6px;background:var(--bg2);border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),#8b5cf6);border-radius:3px;width:0%;transition:width .3s ease}
+  .progress-text{font-size:13px;color:var(--text2)}
 
-  .btn:active { transform: scale(0.98); }
+  /* Toast */
+  .toast{position:fixed;bottom:20px;right:20px;padding:10px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;box-shadow:var(--shadow-lg);transform:translateY(80px);opacity:0;transition:all .25s cubic-bezier(.4,0,.2,1);z-index:1000;display:flex;align-items:center;gap:8px}
+  .toast.show{transform:translateY(0);opacity:1}
+  .toast.success{border-left:3px solid var(--success)}
+  .toast.error{border-left:3px solid var(--danger)}
 
-  .btn-primary {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
-  }
+  /* Status bar */
+  .status-bar{display:flex;align-items:center;gap:14px;padding:0 16px;height:28px;background:var(--bg2);border-top:1px solid var(--border);font-size:11px;color:var(--text3);flex-shrink:0}
 
-  .btn-primary:hover {
-    background: var(--accent-hover);
-    border-color: var(--accent-hover);
-    box-shadow: 0 1px 3px rgba(99, 102, 241, 0.3);
-  }
+  /* Scrollbar */
+  ::-webkit-scrollbar{width:6px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
+  ::-webkit-scrollbar-thumb:hover{background:#9ca3af}
 
-  .btn-ghost {
-    border-color: transparent;
-    color: var(--text-secondary);
-  }
+  .file-input-hidden{display:none}
 
-  .btn-ghost:hover {
-    background: var(--surface-hover);
-    border-color: transparent;
-    color: var(--text);
-  }
-
-  .btn-danger { color: var(--danger); }
-  .btn-danger:hover { background: var(--danger-light); border-color: #fca5a5; }
-
-  /* ===== Mode Tabs ===== */
-  .mode-tabs {
-    display: flex;
-    gap: 2px;
-    background: var(--bg-secondary);
-    padding: 3px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-  }
-
-  .mode-tab {
-    height: 30px;
-    padding: 0 12px;
-    border: 1px solid transparent;
-    border-radius: var(--radius-xs);
-    background: transparent;
-    color: var(--text-secondary);
-    font-size: 12.5px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-    white-space: nowrap;
-  }
-
-  .mode-tab.active {
-    background: var(--surface);
-    color: var(--accent);
-    border-color: var(--border);
-    box-shadow: var(--shadow-sm);
-    font-weight: 600;
-  }
-
-  .mode-tab:not(.active):hover {
-    color: var(--text);
-    background: rgba(0,0,0,0.03);
-  }
-
-  /* ===== Main Layout ===== */
-  .main {
-    display: flex;
-    height: calc(100vh - 56px);
-  }
-
-  /* ===== Panels ===== */
-  .panel {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    background: var(--surface);
-  }
-
-  .panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 16px;
-    height: 40px;
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-
-  .panel-title {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .panel-title .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-  }
-
-  .panel-actions { display: flex; gap: 2px; }
-
-  .panel-btn {
-    height: 28px;
-    padding: 0 8px;
-    border: none;
-    border-radius: var(--radius-xs);
-    background: transparent;
-    color: var(--text-secondary);
-    font-size: 12px;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 3px;
-  }
-
-  .panel-btn:hover {
-    color: var(--text);
-    background: var(--surface-hover);
-  }
-
-  /* ===== Divider ===== */
-  .divider {
-    width: 1px;
-    background: var(--border);
-    position: relative;
-    cursor: col-resize;
-    flex-shrink: 0;
-    transition: background 0.15s;
-  }
-
-  .divider:hover, .divider.dragging { background: var(--accent); }
-
-  .divider::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: -3px;
-    width: 7px;
-    height: 32px;
-    transform: translateY(-50%);
-    border-radius: 4px;
-    background: var(--border);
-    opacity: 0;
-    transition: opacity 0.15s;
-  }
-
-  .divider:hover::after { opacity: 1; background: var(--accent); }
-
-  /* ===== Editor ===== */
-  .editor-wrap {
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .editor {
-    width: 100%;
-    height: 100%;
-    padding: 20px;
-    background: var(--surface);
-    color: var(--text);
-    border: none;
-    outline: none;
-    resize: none;
-    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', Consolas, monospace;
-    font-size: 13.5px;
-    line-height: 1.7;
-    tab-size: 2;
-  }
-
-  .editor::placeholder { color: var(--text-tertiary); }
-
-  /* ===== Preview / Rich Editor ===== */
-  .preview-wrap {
-    flex: 1;
-    overflow-y: auto;
-    background: var(--surface);
-  }
-
-  .preview {
-    padding: 24px 28px;
-    min-height: 100%;
-    outline: none;
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--text);
-  }
-
-  /* Markdown rendered styles */
-  .preview h1 { font-size: 1.85em; font-weight: 700; margin: 1em 0 0.5em; padding-bottom: 0.3em; border-bottom: 2px solid var(--border); color: #111827; }
-  .preview h2 { font-size: 1.45em; font-weight: 600; margin: 1em 0 0.4em; padding-bottom: 0.25em; border-bottom: 1px solid var(--border); color: #1f2937; }
-  .preview h3 { font-size: 1.2em; font-weight: 600; margin: 0.9em 0 0.4em; color: #374151; }
-  .preview h4 { font-size: 1.05em; font-weight: 600; margin: 0.7em 0 0.3em; color: #4b5563; }
-  .preview p { margin: 0.6em 0; }
-  .preview a { color: var(--accent); text-decoration: none; }
-  .preview a:hover { text-decoration: underline; }
-  .preview strong { font-weight: 600; color: #111827; }
-  .preview blockquote {
-    margin: 1em 0;
-    padding: 10px 18px;
-    border-left: 3px solid var(--accent);
-    background: var(--accent-light);
-    border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
-    color: var(--text-secondary);
-  }
-  .preview blockquote p { margin: 0.25em 0; }
-  .preview code {
-    background: #f1f5f9;
-    padding: 1.5px 5px;
-    border-radius: 4px;
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    font-size: 0.88em;
-    color: #c026d3;
-  }
-  .preview pre {
-    margin: 1em 0;
-    padding: 14px 18px;
-    background: #f8fafc;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    overflow-x: auto;
-  }
-  .preview pre code {
-    background: none;
-    padding: 0;
-    color: var(--text);
-    font-size: 13px;
-    line-height: 1.6;
-  }
-  .preview ul, .preview ol { margin: 0.5em 0; padding-left: 1.8em; }
-  .preview li { margin: 0.25em 0; }
-  .preview li::marker { color: var(--accent); }
-  .preview hr { border: none; height: 1px; background: var(--border); margin: 1.5em 0; }
-  .preview table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: 14px; }
-  .preview th, .preview td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; }
-  .preview th { background: var(--bg-secondary); font-weight: 600; font-size: 13px; color: var(--text-secondary); }
-  .preview tr:hover td { background: #fafbfc; }
-  .preview img { max-width: 100%; border-radius: var(--radius-sm); }
-  .preview input[type="checkbox"] { margin-right: 6px; accent-color: var(--accent); }
-
-  /* ===== Editor drag overlay ===== */
-  .editor-wrap { position: relative; }
-  .drag-overlay {
-    display: none;
-    position: absolute;
-    inset: 0;
-    background: rgba(99,102,241,0.06);
-    border: 2px dashed var(--accent);
-    border-radius: var(--radius-sm);
-    z-index: 10;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--accent);
-    pointer-events: none;
-  }
-  .editor-wrap.dragover .drag-overlay { display: flex; }
-
-  /* ===== Image Zone ===== */
-  .img-zone {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-    cursor: pointer;
-    transition: var(--transition);
-  }
-  .img-zone.dragover { background: var(--accent-light); }
-  .img-zone-icon {
-    width: 64px; height: 64px;
-    background: var(--accent-light);
-    border-radius: 16px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 28px; margin-bottom: 16px;
-    transition: var(--transition);
-  }
-  .img-zone:hover .img-zone-icon {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(99,102,241,0.15);
-  }
-  .img-zone h3 { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
-  .img-zone p { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; text-align: center; line-height: 1.6; }
-  .img-preview { max-width: 100%; max-height: 200px; border-radius: var(--radius-sm); margin-top: 16px; border: 1px solid var(--border); display: none; }
-
-  /* ===== PDF Drop Zone ===== */
-  .pdf-zone {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-    cursor: pointer;
-    transition: var(--transition);
-  }
-
-  .pdf-zone.dragover {
-    background: var(--accent-light);
-    border-color: var(--accent);
-  }
-
-  .pdf-zone-icon {
-    width: 64px;
-    height: 64px;
-    background: var(--accent-light);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    margin-bottom: 16px;
-    transition: var(--transition);
-  }
-
-  .pdf-zone:hover .pdf-zone-icon {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
-  }
-
-  .pdf-zone h3 {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
-
-  .pdf-zone p {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-bottom: 16px;
-  }
-
-  .pdf-zone .btn { pointer-events: none; }
-
-  .pdf-progress {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    max-width: 320px;
-  }
-
-  .pdf-progress.active { display: flex; }
-
-  .progress-bar {
-    width: 100%;
-    height: 6px;
-    background: var(--bg-secondary);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), #8b5cf6);
-    border-radius: 3px;
-    width: 0%;
-    transition: width 0.3s ease;
-  }
-
-  .progress-text {
-    font-size: 13px;
-    color: var(--text-secondary);
-  }
-
-  /* ===== Toast ===== */
-  .toast {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    padding: 10px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    font-size: 13px;
-    box-shadow: var(--shadow-lg);
-    transform: translateY(80px);
-    opacity: 0;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .toast.show { transform: translateY(0); opacity: 1; }
-  .toast.success { border-left: 3px solid var(--success); }
-  .toast.error { border-left: 3px solid var(--danger); }
-
-  /* ===== Status Bar ===== */
-  .status-bar {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 0 16px;
-    height: 28px;
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border);
-    font-size: 11px;
-    color: var(--text-tertiary);
-    flex-shrink: 0;
-  }
-
-  /* ===== Scrollbar ===== */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
-
-  /* ===== File Input Hidden ===== */
-  .file-input-hidden { display: none; }
-
-  /* ===== Responsive ===== */
-  @media (max-width: 768px) {
-    .main { flex-direction: column; }
-    .divider { width: 100%; height: 1px; cursor: row-resize; }
-    .divider::after { display: none; }
-    .header { padding: 0 12px; }
-    .header h1 { font-size: 14px; }
-    .btn { height: 30px; padding: 0 10px; font-size: 12px; }
-    .mode-tab { font-size: 11px; padding: 0 8px; }
+  @media(max-width:768px){
+    .main{flex-direction:column}
+    .divider{width:100%;height:1px;cursor:row-resize}
+    .header{padding:0 12px}
+    .header h1{font-size:14px}
+    .btn{height:30px;padding:0 10px;font-size:12px}
+    .mode-tab{font-size:11px;padding:0 8px}
   }
 </style>
 </head>
@@ -578,24 +161,17 @@
     <div class="logo">M</div>
     <h1>Markdown 格式转换器</h1>
   </div>
-  <div class="header-center">
+  <div style="display:flex;align-items:center;gap:8px">
     <div class="mode-tabs">
-      <button class="mode-tab active" onclick="switchMode('md2html')" id="tab-md2html">Markdown → 预览</button>
+      <button class="mode-tab active" onclick="switchMode('md2html')" id="tab-md2html">Markdown / 图片 → 预览</button>
       <button class="mode-tab" onclick="switchMode('html2md')" id="tab-html2md">富文本 → Markdown</button>
       <button class="mode-tab" onclick="switchMode('pdf2md')" id="tab-pdf2md">PDF → Markdown</button>
-      <button class="mode-tab" onclick="switchMode('img2md')" id="tab-img2md">图片 OCR</button>
     </div>
   </div>
   <div class="header-actions">
-    <button class="btn btn-primary" onclick="exportPDF()">
-      <span>📄</span> 导出 PDF
-    </button>
-    <button class="btn" onclick="copyOutput()">
-      <span>📋</span> 复制
-    </button>
-    <button class="btn btn-ghost btn-danger" onclick="clearAll()">
-      <span>🗑</span> 清空
-    </button>
+    <button class="btn btn-primary" onclick="exportPDF()"><span>📄</span> 导出 PDF</button>
+    <button class="btn" onclick="copyOutput()"><span>📋</span> 复制</button>
+    <button class="btn btn-ghost btn-danger" onclick="clearAll()"><span>🗑</span> 清空</button>
   </div>
 </div>
 
@@ -605,50 +181,42 @@
     <div class="panel-header">
       <div class="panel-title">
         <span class="dot"></span>
-        <span id="left-label">MARKDOWN 输入</span>
+        <span id="left-label">输入（Markdown 或粘贴图片 OCR）</span>
       </div>
       <div class="panel-actions">
+        <button class="panel-btn" onclick="document.getElementById('img-file-input').click()" id="btn-upload-img">🖼 上传图片 OCR</button>
         <button class="panel-btn" onclick="loadSample()" id="btn-sample">📝 示例</button>
         <button class="panel-btn" onclick="pasteFromClipboard()" id="btn-paste">📋 粘贴</button>
       </div>
     </div>
 
-    <!-- Mode 1: Markdown input -->
+    <!-- OCR progress bar (inline, shows during recognition) -->
+    <div class="ocr-bar" id="ocr-bar">
+      <span class="ocr-text" id="ocr-status">🔍 识别中...</span>
+      <div class="ocr-progress"><div class="ocr-fill" id="ocr-fill"></div></div>
+    </div>
+
+    <!-- Mode 1: Markdown + image input -->
     <div class="editor-wrap" id="md-editor-wrap">
-      <div class="drag-overlay">📷 松开以插入图片</div>
-      <textarea class="editor" id="md-editor" placeholder="在这里粘贴或输入 Markdown 内容...&#10;&#10;支持：&#10;  # 标题&#10;  **粗体** *斜体*&#10;  - 列表&#10;  > 引用&#10;  | 表格 |&#10;  [链接](url)&#10;&#10;💡 可直接粘贴或拖拽图片（插入为 Base64）"></textarea>
+      <div class="drag-overlay">📷 松开以 OCR 识别图片文字</div>
+      <textarea class="editor" id="md-editor" placeholder="在这里输入 Markdown，或直接粘贴 / 拖拽图片自动 OCR 提取文字&#10;&#10;支持：&#10;  # 标题  **粗体**  *斜体*&#10;  - 列表  > 引用  | 表格 |&#10;  [链接](url)  ```代码```&#10;&#10;💡 Ctrl+V 粘贴截图 → 自动识别图片中的文字"></textarea>
     </div>
 
     <!-- Mode 2: Rich text input -->
-    <div class="preview-wrap" id="rich-editor-wrap" style="display:none;">
-      <div class="preview" id="rich-editor" contenteditable="true" style="min-height:100%;cursor:text;"></div>
+    <div class="preview-wrap" id="rich-editor-wrap" style="display:none">
+      <div class="preview" id="rich-editor" contenteditable="true" style="min-height:100%;cursor:text"></div>
     </div>
 
     <!-- Mode 3: PDF upload -->
-    <div id="pdf-upload-wrap" style="display:none;flex:1;overflow-y:auto;">
-      <div class="pdf-zone" id="pdf-zone" onclick="document.getElementById('pdf-file-input').click();">
-        <div class="pdf-zone-icon">📑</div>
+    <div id="pdf-upload-wrap" style="display:none;flex:1;overflow-y:auto">
+      <div class="upload-zone" id="pdf-zone" onclick="document.getElementById('pdf-file-input').click()">
+        <div class="upload-zone-icon">📑</div>
         <h3>上传 PDF 文件</h3>
         <p>拖拽 PDF 到这里，或点击选择文件</p>
-        <div class="btn" style="pointer-events:none;">选择 PDF 文件</div>
-        <div class="pdf-progress" id="pdf-progress">
+        <div class="btn" style="pointer-events:none">选择 PDF 文件</div>
+        <div class="upload-progress" id="pdf-progress">
           <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
           <div class="progress-text" id="progress-text">正在解析...</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Mode 4: Image OCR -->
-    <div id="img-upload-wrap" style="display:none;flex:1;overflow-y:auto;">
-      <div class="img-zone" id="img-zone" onclick="document.getElementById('img-file-input').click();">
-        <div class="img-zone-icon">🔍</div>
-        <h3>图片文字识别 (OCR)</h3>
-        <p>拖拽图片到这里，点击选择，或 Ctrl+V 粘贴截图<br>自动识别图片中的文字，支持中英文混排</p>
-        <div class="btn" style="pointer-events:none;">选择图片文件</div>
-        <img class="img-preview" id="img-preview">
-        <div class="pdf-progress" id="ocr-progress">
-          <div class="progress-bar"><div class="progress-fill" id="ocr-progress-fill"></div></div>
-          <div class="progress-text" id="ocr-progress-text">正在识别...</div>
         </div>
       </div>
     </div>
@@ -673,17 +241,12 @@
         <button class="panel-btn" onclick="copyOutput()">📋 复制结果</button>
       </div>
     </div>
-
-    <!-- Mode 1: HTML Preview -->
     <div class="preview-wrap" id="preview-wrap">
       <div class="preview" id="preview"></div>
     </div>
-
-    <!-- Mode 2 & 3: Markdown output -->
-    <div class="editor-wrap" id="md-output-wrap" style="display:none;">
+    <div class="editor-wrap" id="md-output-wrap" style="display:none">
       <textarea class="editor" id="md-output" readonly placeholder="转换后的 Markdown 将在这里显示..."></textarea>
     </div>
-
     <div class="status-bar" id="right-status">
       <span id="right-chars">字符: 0</span>
       <span id="right-lines">行数: 0</span>
@@ -694,716 +257,352 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ===== State =====
 let currentMode = 'md2html';
 
 // ===== Marked =====
 marked.setOptions({
-  highlight: function(code, lang) {
-    if (lang && hljs.getLanguage(lang)) return hljs.highlight(code, { language: lang }).value;
-    return hljs.highlightAuto(code).value;
-  },
-  breaks: true,
-  gfm: true
+  highlight: (code, lang) => lang && hljs.getLanguage(lang) ? hljs.highlight(code,{language:lang}).value : hljs.highlightAuto(code).value,
+  breaks: true, gfm: true
 });
 
 // ===== Turndown =====
-const turndownService = new TurndownService({
-  headingStyle: 'atx',
-  codeBlockStyle: 'fenced',
-  bulletListMarker: '-',
-  emDelimiter: '*',
-  strongDelimiter: '**',
-  hr: '---'
-});
-if (typeof turndownPluginGfm !== 'undefined') {
-  turndownService.use(turndownPluginGfm.gfm);
-}
+const turndownService = new TurndownService({headingStyle:'atx',codeBlockStyle:'fenced',bulletListMarker:'-',emDelimiter:'*',strongDelimiter:'**',hr:'---'});
+if (typeof turndownPluginGfm!=='undefined') turndownService.use(turndownPluginGfm.gfm);
 
 // ===== PDF.js =====
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 // ===== Elements =====
-const mdEditor = document.getElementById('md-editor');
-const mdEditorWrap = document.getElementById('md-editor-wrap');
-const richEditorWrap = document.getElementById('rich-editor-wrap');
-const richEditor = document.getElementById('rich-editor');
-const pdfUploadWrap = document.getElementById('pdf-upload-wrap');
-const imgUploadWrap = document.getElementById('img-upload-wrap');
-const previewWrap = document.getElementById('preview-wrap');
-const preview = document.getElementById('preview');
-const mdOutputWrap = document.getElementById('md-output-wrap');
-const mdOutput = document.getElementById('md-output');
+const mdEditor=document.getElementById('md-editor'), mdEditorWrap=document.getElementById('md-editor-wrap');
+const richEditorWrap=document.getElementById('rich-editor-wrap'), richEditor=document.getElementById('rich-editor');
+const pdfUploadWrap=document.getElementById('pdf-upload-wrap');
+const previewWrap=document.getElementById('preview-wrap'), preview=document.getElementById('preview');
+const mdOutputWrap=document.getElementById('md-output-wrap'), mdOutput=document.getElementById('md-output');
 
 // ===== Mode Switching =====
 function switchMode(mode) {
   currentMode = mode;
-  document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.mode-tab').forEach(t=>t.classList.remove('active'));
+  mdEditorWrap.style.display='none'; richEditorWrap.style.display='none';
+  pdfUploadWrap.style.display='none'; previewWrap.style.display='none'; mdOutputWrap.style.display='none';
+  document.getElementById('ocr-bar').classList.remove('active');
 
-  // Hide all input areas
-  mdEditorWrap.style.display = 'none';
-  richEditorWrap.style.display = 'none';
-  pdfUploadWrap.style.display = 'none';
-  imgUploadWrap.style.display = 'none';
-  previewWrap.style.display = 'none';
-  mdOutputWrap.style.display = 'none';
+  const btnSample=document.getElementById('btn-sample'), btnPaste=document.getElementById('btn-paste');
+  const btnImg=document.getElementById('btn-upload-img');
 
-  const btnSample = document.getElementById('btn-sample');
-  const btnPaste = document.getElementById('btn-paste');
-
-  if (mode === 'md2html') {
+  if (mode==='md2html') {
     document.getElementById('tab-md2html').classList.add('active');
-    document.getElementById('left-label').textContent = 'MARKDOWN 输入';
-    document.getElementById('right-label').textContent = '渲染预览';
-    mdEditorWrap.style.display = '';
-    previewWrap.style.display = '';
-    btnSample.style.display = '';
-    btnPaste.style.display = '';
+    document.getElementById('left-label').textContent='输入（Markdown 或粘贴图片 OCR）';
+    document.getElementById('right-label').textContent='渲染预览';
+    mdEditorWrap.style.display=''; previewWrap.style.display='';
+    btnSample.style.display=''; btnPaste.style.display=''; btnImg.style.display='';
     renderMarkdown();
-  } else if (mode === 'html2md') {
+  } else if (mode==='html2md') {
     document.getElementById('tab-html2md').classList.add('active');
-    document.getElementById('left-label').textContent = '富文本输入';
-    document.getElementById('right-label').textContent = 'MARKDOWN 输出';
-    richEditorWrap.style.display = '';
-    mdOutputWrap.style.display = '';
-    btnSample.style.display = '';
-    btnPaste.style.display = '';
+    document.getElementById('left-label').textContent='富文本输入';
+    document.getElementById('right-label').textContent='MARKDOWN 输出';
+    richEditorWrap.style.display=''; mdOutputWrap.style.display='';
+    btnSample.style.display=''; btnPaste.style.display=''; btnImg.style.display='none';
     convertToMarkdown();
-  } else if (mode === 'pdf2md') {
+  } else if (mode==='pdf2md') {
     document.getElementById('tab-pdf2md').classList.add('active');
-    document.getElementById('left-label').textContent = 'PDF 文件';
-    document.getElementById('right-label').textContent = 'MARKDOWN 输出';
-    pdfUploadWrap.style.display = 'flex';
-    mdOutputWrap.style.display = '';
-    btnSample.style.display = 'none';
-    btnPaste.style.display = 'none';
-  } else if (mode === 'img2md') {
-    document.getElementById('tab-img2md').classList.add('active');
-    document.getElementById('left-label').textContent = '图片 OCR';
-    document.getElementById('right-label').textContent = '识别结果';
-    imgUploadWrap.style.display = 'flex';
-    mdOutputWrap.style.display = '';
-    btnSample.style.display = 'none';
-    btnPaste.style.display = 'none';
+    document.getElementById('left-label').textContent='PDF 文件';
+    document.getElementById('right-label').textContent='MARKDOWN 输出';
+    pdfUploadWrap.style.display='flex'; mdOutputWrap.style.display='';
+    btnSample.style.display='none'; btnPaste.style.display='none'; btnImg.style.display='none';
   }
   updateStats();
 }
 
 // ===== Markdown → HTML =====
 function renderMarkdown() {
-  const md = mdEditor.value;
-  preview.innerHTML = marked.parse(md);
-  preview.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+  preview.innerHTML = marked.parse(mdEditor.value);
+  preview.querySelectorAll('pre code').forEach(b=>hljs.highlightElement(b));
   updateStats();
 }
 
 // ===== HTML → Markdown =====
 function convertToMarkdown() {
-  const html = richEditor.innerHTML;
-  if (!html || html === '<br>' || !html.trim()) {
-    mdOutput.value = '';
-    updateStats();
-    return;
-  }
-  try {
-    mdOutput.value = turndownService.turndown(html);
-  } catch (e) {
-    mdOutput.value = '// 转换出错: ' + e.message;
-  }
+  const html=richEditor.innerHTML;
+  if (!html||html==='<br>'||!html.trim()){mdOutput.value='';updateStats();return}
+  try{mdOutput.value=turndownService.turndown(html)}catch(e){mdOutput.value='// 转换出错: '+e.message}
   updateStats();
 }
 
-// ===== PDF → Markdown =====
-async function parsePDF(file) {
-  const pdfZone = document.getElementById('pdf-zone');
-  const pdfProgress = document.getElementById('pdf-progress');
-  const progressFill = document.getElementById('progress-fill');
-  const progressText = document.getElementById('progress-text');
+// ===== OCR (inline in first tab) =====
+function imageToBase64(file){return new Promise((r,j)=>{const rd=new FileReader();rd.onload=()=>r(rd.result);rd.onerror=j;rd.readAsDataURL(file)})}
 
-  pdfProgress.classList.add('active');
-  progressFill.style.width = '0%';
-  progressText.textContent = '正在加载 PDF...';
+async function ocrAndInsert(file) {
+  const bar=document.getElementById('ocr-bar');
+  const fill=document.getElementById('ocr-fill');
+  const status=document.getElementById('ocr-status');
 
-  try {
-    const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    const totalPages = pdf.numPages;
-    let fullText = '';
-
-    progressText.textContent = `共 ${totalPages} 页，正在解析...`;
-
-    for (let i = 1; i <= totalPages; i++) {
-      const page = await pdf.getPage(i);
-      const textContent = await page.getTextContent();
-
-      // Smart text reconstruction
-      const items = textContent.items;
-      let pageText = '';
-      let lastY = null;
-      let lastX = null;
-      let lastFontSize = null;
-      let lastItem = null;
-
-      for (const item of items) {
-        const y = Math.round(item.transform[5]);
-        const x = item.transform[4];
-        const fontSize = Math.round(item.height);
-        const text = item.str;
-
-        if (lastY !== null && Math.abs(y - lastY) > 3) {
-          // New line detected
-          const yGap = Math.abs(y - lastY);
-          if (yGap > fontSize * 1.8) {
-            pageText += '\n\n'; // Paragraph break
-          } else {
-            pageText += '\n';
-          }
-        } else if (lastItem && lastX !== null) {
-          // Same line - check spacing
-          const expectedEnd = lastX + (lastItem.width || 0);
-          const gap = x - expectedEnd;
-          if (gap > fontSize * 0.3) {
-            pageText += ' ';
-          }
-        }
-
-        pageText += text;
-        lastY = y;
-        lastX = x;
-        lastFontSize = fontSize;
-        lastItem = item;
-      }
-
-      if (totalPages > 1 && i < totalPages) {
-        fullText += pageText + '\n\n---\n\n';
-      } else {
-        fullText += pageText;
-      }
-
-      const pct = Math.round((i / totalPages) * 100);
-      progressFill.style.width = pct + '%';
-      progressText.textContent = `解析中... ${i}/${totalPages} 页 (${pct}%)`;
-    }
-
-    // Post-process: try to detect headings and format as markdown
-    fullText = postProcessPdfText(fullText);
-
-    mdOutput.value = fullText;
-    progressFill.style.width = '100%';
-    progressText.textContent = `完成！共 ${totalPages} 页，${fullText.length} 字符`;
-
-    setTimeout(() => {
-      pdfProgress.classList.remove('active');
-    }, 2000);
-
-    updateStats();
-    showToast(`PDF 解析完成 (${totalPages} 页)`, 'success');
-  } catch (e) {
-    progressText.textContent = '解析失败: ' + e.message;
-    progressFill.style.width = '0%';
-    showToast('PDF 解析失败: ' + e.message, 'error');
-  }
-}
-
-function postProcessPdfText(text) {
-  let lines = text.split('\n');
-  let result = [];
-
-  for (let i = 0; i < lines.length; i++) {
-    let line = lines[i].trim();
-    if (!line) {
-      result.push('');
-      continue;
-    }
-
-    // Simple heuristic: short lines (< 60 chars) that are followed by longer content
-    // and don't end with punctuation might be headings
-    const nextNonEmpty = lines.slice(i + 1).find(l => l.trim());
-    const isShort = line.length < 60;
-    const noPunctEnd = !/[.。,，;；:：!！?？)）\]】"]$/.test(line);
-    const nextIsLonger = nextNonEmpty && nextNonEmpty.trim().length > line.length;
-
-    if (isShort && noPunctEnd && nextIsLonger && line.length > 1 && !line.startsWith('#') && !line.startsWith('-') && !line.startsWith('---')) {
-      // Likely a heading
-      if (line.length < 20) {
-        result.push('## ' + line);
-      } else {
-        result.push('### ' + line);
-      }
-    } else {
-      result.push(line);
-    }
-  }
-
-  // Clean up excessive blank lines
-  return result.join('\n').replace(/\n{4,}/g, '\n\n\n');
-}
-
-// ===== PDF Drop & File Input =====
-const pdfZone = document.getElementById('pdf-zone');
-const pdfFileInput = document.getElementById('pdf-file-input');
-
-pdfZone.addEventListener('dragover', (e) => {
-  e.preventDefault();
-  pdfZone.classList.add('dragover');
-});
-
-pdfZone.addEventListener('dragleave', () => {
-  pdfZone.classList.remove('dragover');
-});
-
-pdfZone.addEventListener('drop', (e) => {
-  e.preventDefault();
-  pdfZone.classList.remove('dragover');
-  const files = e.dataTransfer.files;
-  if (files.length > 0 && files[0].type === 'application/pdf') {
-    parsePDF(files[0]);
-  } else {
-    showToast('请上传 PDF 文件', 'error');
-  }
-});
-
-pdfFileInput.addEventListener('change', (e) => {
-  if (e.target.files.length > 0) {
-    parsePDF(e.target.files[0]);
-    e.target.value = '';
-  }
-});
-
-// ===== Image OCR =====
-function imageToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-// Insert image as base64 markdown (for md2html mode paste/drop)
-async function insertImageAsBase64(files) {
-  const imageFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
-  if (imageFiles.length === 0) return;
-
-  let mdSnippets = [];
-  for (const file of imageFiles) {
-    const base64 = await imageToBase64(file);
-    const name = file.name.replace(/\.[^.]+$/, '') || 'image';
-    mdSnippets.push(`![${name}](${base64})`);
-  }
-
-  const mdText = mdSnippets.join('\n\n');
-  const editor = mdEditor;
-  const start = editor.selectionStart;
-  const end = editor.selectionEnd;
-  const before = editor.value.substring(0, start);
-  const after = editor.value.substring(end);
-  const insertion = (before && !before.endsWith('\n') ? '\n\n' : '') + mdText + '\n\n';
-  editor.value = before + insertion + after;
-  editor.selectionStart = editor.selectionEnd = start + insertion.length;
-  renderMarkdown();
-  showToast(`已插入 ${imageFiles.length} 张图片`, 'success');
-}
-
-// OCR: recognize text from image using Tesseract.js
-async function ocrImage(file) {
-  const ocrProgress = document.getElementById('ocr-progress');
-  const ocrFill = document.getElementById('ocr-progress-fill');
-  const ocrText = document.getElementById('ocr-progress-text');
-  const imgPreview = document.getElementById('img-preview');
-
-  // Show preview
-  const base64 = await imageToBase64(file);
-  imgPreview.src = base64;
-  imgPreview.style.display = 'block';
-
-  // Show progress
-  ocrProgress.classList.add('active');
-  ocrFill.style.width = '5%';
-  ocrText.textContent = '正在加载 OCR 引擎 (首次约需 10-20 秒)...';
+  bar.classList.add('active');
+  fill.style.width='5%';
+  status.textContent='🔍 加载 OCR 引擎...';
 
   try {
     const worker = await Tesseract.createWorker('chi_sim+eng', 1, {
-      logger: (m) => {
-        if (m.status === 'recognizing text') {
-          const pct = Math.round((m.progress || 0) * 100);
-          ocrFill.style.width = Math.max(10, pct) + '%';
-          ocrText.textContent = `识别中... ${pct}%`;
-        } else if (m.status === 'loading language traineddata') {
-          ocrFill.style.width = '8%';
-          ocrText.textContent = '加载中文+英文语言包...';
-        } else if (m.status === 'initializing api') {
-          ocrFill.style.width = '10%';
-          ocrText.textContent = '初始化识别引擎...';
+      logger: m => {
+        if (m.status==='recognizing text') {
+          const p=Math.round((m.progress||0)*100);
+          fill.style.width=Math.max(10,p)+'%';
+          status.textContent=`🔍 识别中 ${p}%`;
+        } else if (m.status==='loading language traineddata') {
+          fill.style.width='8%'; status.textContent='🔍 加载语言包 (首次较慢)...';
+        } else if (m.status==='initializing api') {
+          fill.style.width='10%'; status.textContent='🔍 初始化引擎...';
         }
       }
     });
 
-    const { data } = await worker.recognize(file);
+    const {data} = await worker.recognize(file);
     await worker.terminate();
 
-    // Process OCR result into structured Markdown
     const mdResult = postProcessOCR(data);
+    if (!mdResult.trim()) { showToast('未识别到文字','error'); bar.classList.remove('active'); return; }
 
-    // Append to output
-    const existing = mdOutput.value;
-    mdOutput.value = (existing ? existing + '\n\n---\n\n' : '') + mdResult;
+    // Insert OCR text at cursor
+    const ed=mdEditor, start=ed.selectionStart, end=ed.selectionEnd;
+    const before=ed.value.substring(0,start), after=ed.value.substring(end);
+    const sep = before && !before.endsWith('\n') ? '\n\n' : (before ? '' : '');
+    ed.value = before + sep + mdResult + '\n\n' + after;
+    ed.selectionStart = ed.selectionEnd = start + sep.length + mdResult.length + 2;
+    renderMarkdown();
 
-    ocrFill.style.width = '100%';
-    ocrText.textContent = `识别完成！共 ${data.text.trim().length} 字符，置信度 ${Math.round(data.confidence)}%`;
+    fill.style.width='100%';
+    status.textContent=`✅ 识别完成 (${data.text.trim().length} 字，置信度 ${Math.round(data.confidence)}%)`;
+    showToast(`OCR 完成 — ${data.text.trim().length} 字，置信度 ${Math.round(data.confidence)}%`,'success');
+    setTimeout(()=>bar.classList.remove('active'), 3000);
 
-    setTimeout(() => ocrProgress.classList.remove('active'), 3000);
-    updateStats();
-    showToast(`OCR 完成 (置信度 ${Math.round(data.confidence)}%)`, 'success');
-
-  } catch (err) {
-    ocrFill.style.width = '0%';
-    ocrText.textContent = '识别失败: ' + err.message;
-    showToast('OCR 识别失败: ' + err.message, 'error');
+  } catch(err) {
+    fill.style.width='0%'; status.textContent='❌ '+err.message;
+    showToast('OCR 失败: '+err.message,'error');
+    setTimeout(()=>bar.classList.remove('active'), 4000);
   }
 }
 
 function postProcessOCR(data) {
-  // Use Tesseract's paragraph/line structure for better formatting
-  if (!data.paragraphs || data.paragraphs.length === 0) {
-    // Fallback: just clean up raw text
-    return cleanOCRText(data.text);
-  }
-
-  let result = [];
+  if (!data.paragraphs||data.paragraphs.length===0) return cleanOCRText(data.text);
+  let result=[];
   for (const para of data.paragraphs) {
-    let paraText = '';
-    if (para.lines) {
-      const lineTexts = para.lines.map(l => l.text.trim()).filter(Boolean);
-      paraText = lineTexts.join('\n');
+    let pt='';
+    if (para.lines) pt=para.lines.map(l=>l.text.trim()).filter(Boolean).join('\n');
+    else pt=para.text.trim();
+    if (!pt) continue;
+    const lines=pt.split('\n');
+    if (lines.length===1&&pt.length<50&&!/[.。,，;；!！?？]$/.test(pt)){
+      result.push((pt.length<15?'## ':'### ')+pt);
     } else {
-      paraText = para.text.trim();
-    }
-
-    if (!paraText) continue;
-
-    // Heuristic: detect headings (short, no trailing punct, high confidence)
-    const lines = paraText.split('\n');
-    if (lines.length === 1 && paraText.length < 50 && !/[.。,，;；!！?？]$/.test(paraText)) {
-      // Likely a heading
-      if (paraText.length < 15) {
-        result.push('## ' + paraText);
-      } else {
-        result.push('### ' + paraText);
-      }
-    } else {
-      // Normal paragraph - join lines that are part of same paragraph
-      const joined = lines.join(' ').replace(/\s+/g, ' ').trim();
-      result.push(joined);
+      result.push(lines.join(' ').replace(/\s+/g,' ').trim());
     }
   }
-
   return result.join('\n\n');
 }
 
 function cleanOCRText(text) {
-  if (!text) return '';
-  // Clean up common OCR artifacts
-  return text
-    .replace(/\r\n/g, '\n')
-    .replace(/[ \t]+\n/g, '\n')         // trailing spaces
-    .replace(/\n{3,}/g, '\n\n')          // excessive blank lines
-    .replace(/([^\n])\n([^\n])/g, (m, a, b) => {
-      // If line doesn't end with punctuation and next line starts with lowercase/Chinese, join them
-      if (/[.。!！?？:：;；]$/.test(a)) return m;
-      if (/^[A-Z]/.test(b)) return m; // New sentence
-      return a + ' ' + b;
-    })
-    .trim();
+  if(!text) return '';
+  return text.replace(/\r\n/g,'\n').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n')
+    .replace(/([^\n])\n([^\n])/g,(m,a,b)=>/[.。!！?？:：;；]$/.test(a)||/^[A-Z]/.test(b)?m:a+' '+b).trim();
 }
 
-// Handle image files: route to OCR or base64 depending on mode
-async function handleImageFiles(files, insertIntoEditor) {
-  const imageFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
-  if (imageFiles.length === 0) return;
+// ===== Image paste/drop/upload into first tab =====
+mdEditor.addEventListener('paste', e => {
+  const items = e.clipboardData?.items;
+  if (!items) return;
+  const imgs = Array.from(items).filter(i=>i.type.startsWith('image/'));
+  if (imgs.length===0) return;
+  e.preventDefault();
+  for (const item of imgs) { const f=item.getAsFile(); if(f) ocrAndInsert(f); }
+});
 
-  if (insertIntoEditor) {
-    // Markdown editor mode: insert as base64
-    await insertImageAsBase64(imageFiles);
-  } else {
-    // img2md mode: run OCR on each image
-    for (const file of imageFiles) {
-      await ocrImage(file);
+mdEditorWrap.addEventListener('dragover', e => {
+  if(e.dataTransfer.types.includes('Files')){e.preventDefault();mdEditorWrap.classList.add('dragover')}
+});
+mdEditorWrap.addEventListener('dragleave', e => {
+  if(!mdEditorWrap.contains(e.relatedTarget)) mdEditorWrap.classList.remove('dragover');
+});
+mdEditorWrap.addEventListener('drop', e => {
+  e.preventDefault(); mdEditorWrap.classList.remove('dragover');
+  const imgs=Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/'));
+  for (const f of imgs) ocrAndInsert(f);
+});
+
+// Upload button
+document.getElementById('img-file-input').addEventListener('change', e => {
+  if(e.target.files.length>0){
+    for(const f of e.target.files) if(f.type.startsWith('image/')) ocrAndInsert(f);
+    e.target.value='';
+  }
+});
+
+// Global paste for img2md compat (when focused elsewhere)
+document.addEventListener('paste', e => {
+  if(currentMode!=='md2html') return;
+  if(document.activeElement===mdEditor) return; // already handled
+  const items=e.clipboardData?.items;
+  if(!items) return;
+  const imgs=Array.from(items).filter(i=>i.type.startsWith('image/'));
+  if(imgs.length===0) return;
+  e.preventDefault();
+  for(const item of imgs){const f=item.getAsFile();if(f) ocrAndInsert(f);}
+});
+
+// ===== PDF =====
+async function parsePDF(file) {
+  const prog=document.getElementById('pdf-progress'), fill=document.getElementById('progress-fill'), txt=document.getElementById('progress-text');
+  prog.classList.add('active'); fill.style.width='0%'; txt.textContent='正在加载 PDF...';
+  try {
+    const ab=await file.arrayBuffer(), pdf=await pdfjsLib.getDocument({data:ab}).promise;
+    const total=pdf.numPages; let full='';
+    for(let i=1;i<=total;i++){
+      const page=await pdf.getPage(i), tc=await page.getTextContent();
+      let pt='',ly=null,lx=null,lfs=null,li=null;
+      for(const item of tc.items){
+        const y=Math.round(item.transform[5]),x=item.transform[4],fs=Math.round(item.height),t=item.str;
+        if(ly!==null&&Math.abs(y-ly)>3){pt+=Math.abs(y-ly)>fs*1.8?'\n\n':'\n'}
+        else if(li&&lx!==null){const g=x-(lx+(li.width||0));if(g>fs*.3)pt+=' '}
+        pt+=t;ly=y;lx=x;lfs=fs;li=item;
+      }
+      full+=pt+(total>1&&i<total?'\n\n---\n\n':'');
+      const p=Math.round(i/total*100);fill.style.width=p+'%';txt.textContent=`解析中... ${i}/${total} 页 (${p}%)`;
     }
-  }
+    full=postProcessPdfText(full); mdOutput.value=full;
+    fill.style.width='100%'; txt.textContent=`完成！${total} 页，${full.length} 字符`;
+    setTimeout(()=>prog.classList.remove('active'),2000);
+    updateStats(); showToast(`PDF 解析完成 (${total} 页)`,'success');
+  } catch(e){txt.textContent='解析失败: '+e.message;fill.style.width='0%';showToast('PDF 解析失败: '+e.message,'error')}
 }
 
-// Image zone: drag & drop + click
-const imgZone = document.getElementById('img-zone');
-const imgFileInput = document.getElementById('img-file-input');
-
-imgZone.addEventListener('dragover', (e) => { e.preventDefault(); imgZone.classList.add('dragover'); });
-imgZone.addEventListener('dragleave', () => imgZone.classList.remove('dragover'));
-imgZone.addEventListener('drop', (e) => {
-  e.preventDefault();
-  imgZone.classList.remove('dragover');
-  handleImageFiles(e.dataTransfer.files, false);
-});
-
-imgFileInput.addEventListener('change', (e) => {
-  if (e.target.files.length > 0) {
-    handleImageFiles(e.target.files, false);
-    e.target.value = '';
+function postProcessPdfText(text){
+  let lines=text.split('\n'),r=[];
+  for(let i=0;i<lines.length;i++){
+    let l=lines[i].trim(); if(!l){r.push('');continue}
+    const next=lines.slice(i+1).find(x=>x.trim());
+    if(l.length<60&&!/[.。,，;；:：!！?？)）\]】"]$/.test(l)&&next&&next.trim().length>l.length&&l.length>1&&!l.startsWith('#')&&!l.startsWith('---'))
+      r.push((l.length<20?'## ':'### ')+l);
+    else r.push(l);
   }
-});
+  return r.join('\n').replace(/\n{4,}/g,'\n\n\n');
+}
 
-// Markdown editor: paste image
-mdEditor.addEventListener('paste', (e) => {
-  const items = e.clipboardData?.items;
-  if (!items) return;
-  const imageItems = Array.from(items).filter(i => i.type.startsWith('image/'));
-  if (imageItems.length === 0) return;
-  e.preventDefault();
-  const files = imageItems.map(i => i.getAsFile()).filter(Boolean);
-  handleImageFiles(files, true);
-});
-
-// Markdown editor: drag & drop image
-mdEditorWrap.addEventListener('dragover', (e) => {
-  if (e.dataTransfer.types.includes('Files')) {
-    e.preventDefault();
-    mdEditorWrap.classList.add('dragover');
-  }
-});
-mdEditorWrap.addEventListener('dragleave', (e) => {
-  if (!mdEditorWrap.contains(e.relatedTarget)) mdEditorWrap.classList.remove('dragover');
-});
-mdEditorWrap.addEventListener('drop', (e) => {
-  e.preventDefault();
-  mdEditorWrap.classList.remove('dragover');
-  const files = e.dataTransfer.files;
-  const imageFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
-  if (imageFiles.length > 0) handleImageFiles(imageFiles, true);
-});
-
-// Image zone: paste (when in img2md mode)
-document.addEventListener('paste', (e) => {
-  if (currentMode !== 'img2md') return;
-  const items = e.clipboardData?.items;
-  if (!items) return;
-  const imageItems = Array.from(items).filter(i => i.type.startsWith('image/'));
-  if (imageItems.length === 0) return;
-  e.preventDefault();
-  const files = imageItems.map(i => i.getAsFile()).filter(Boolean);
-  handleImageFiles(files, false);
-});
+const pdfZone=document.getElementById('pdf-zone'), pdfFileInput=document.getElementById('pdf-file-input');
+pdfZone.addEventListener('dragover',e=>{e.preventDefault();pdfZone.classList.add('dragover')});
+pdfZone.addEventListener('dragleave',()=>pdfZone.classList.remove('dragover'));
+pdfZone.addEventListener('drop',e=>{e.preventDefault();pdfZone.classList.remove('dragover');const f=e.dataTransfer.files;if(f.length>0&&f[0].type==='application/pdf')parsePDF(f[0]);else showToast('请上传 PDF','error')});
+pdfFileInput.addEventListener('change',e=>{if(e.target.files.length>0){parsePDF(e.target.files[0]);e.target.value=''}});
 
 // ===== Event Listeners =====
-mdEditor.addEventListener('input', () => {
-  if (currentMode === 'md2html') renderMarkdown();
-});
-
-richEditor.addEventListener('input', () => {
-  if (currentMode === 'html2md') convertToMarkdown();
-});
-
-richEditor.addEventListener('paste', () => {
-  setTimeout(() => {
-    if (currentMode === 'html2md') convertToMarkdown();
-  }, 50);
-});
+mdEditor.addEventListener('input',()=>{if(currentMode==='md2html')renderMarkdown()});
+richEditor.addEventListener('input',()=>{if(currentMode==='html2md')convertToMarkdown()});
+richEditor.addEventListener('paste',()=>setTimeout(()=>{if(currentMode==='html2md')convertToMarkdown()},50));
 
 // ===== Stats =====
-function updateStats() {
-  if (currentMode === 'md2html') {
-    const t = mdEditor.value;
-    document.getElementById('left-chars').textContent = '字符: ' + t.length;
-    document.getElementById('left-lines').textContent = '行数: ' + (t ? t.split('\n').length : 0);
-    document.getElementById('left-words').textContent = '字数: ' + countWords(t);
-    const h = preview.textContent || '';
-    document.getElementById('right-chars').textContent = '字符: ' + h.length;
-    document.getElementById('right-lines').textContent = '字数: ' + countWords(h);
-  } else if (currentMode === 'html2md') {
-    const h = richEditor.textContent || '';
-    document.getElementById('left-chars').textContent = '字符: ' + h.length;
-    document.getElementById('left-lines').textContent = '字数: ' + countWords(h);
-    document.getElementById('left-words').textContent = '';
-    const m = mdOutput.value;
-    document.getElementById('right-chars').textContent = '字符: ' + m.length;
-    document.getElementById('right-lines').textContent = '行数: ' + (m ? m.split('\n').length : 0);
+function updateStats(){
+  if(currentMode==='md2html'){
+    const t=mdEditor.value;
+    document.getElementById('left-chars').textContent='字符: '+t.length;
+    document.getElementById('left-lines').textContent='行数: '+(t?t.split('\n').length:0);
+    document.getElementById('left-words').textContent='字数: '+countWords(t);
+    const h=preview.textContent||'';
+    document.getElementById('right-chars').textContent='字符: '+h.length;
+    document.getElementById('right-lines').textContent='字数: '+countWords(h);
+  } else if(currentMode==='html2md'){
+    const h=richEditor.textContent||'';
+    document.getElementById('left-chars').textContent='字符: '+h.length;
+    document.getElementById('left-lines').textContent='字数: '+countWords(h);
+    document.getElementById('left-words').textContent='';
+    const m=mdOutput.value;
+    document.getElementById('right-chars').textContent='字符: '+m.length;
+    document.getElementById('right-lines').textContent='行数: '+(m?m.split('\n').length:0);
   } else {
-    const m = mdOutput.value;
-    document.getElementById('left-chars').textContent = '';
-    document.getElementById('left-lines').textContent = '';
-    document.getElementById('left-words').textContent = '';
-    document.getElementById('right-chars').textContent = '字符: ' + m.length;
-    document.getElementById('right-lines').textContent = '行数: ' + (m ? m.split('\n').length : 0);
+    const m=mdOutput.value;
+    document.getElementById('left-chars').textContent='';
+    document.getElementById('left-lines').textContent='';
+    document.getElementById('left-words').textContent='';
+    document.getElementById('right-chars').textContent='字符: '+m.length;
+    document.getElementById('right-lines').textContent='行数: '+(m?m.split('\n').length:0);
   }
 }
-
-function countWords(text) {
-  if (!text) return 0;
-  const cn = (text.match(/[\u4e00-\u9fff]/g) || []).length;
-  const en = (text.replace(/[\u4e00-\u9fff]/g, '').match(/\b\w+\b/g) || []).length;
-  return cn + en;
-}
+function countWords(t){if(!t)return 0;return(t.match(/[\u4e00-\u9fff]/g)||[]).length+(t.replace(/[\u4e00-\u9fff]/g,'').match(/\b\w+\b/g)||[]).length}
 
 // ===== Actions =====
-function copyOutput() {
-  if (currentMode === 'md2html') {
-    const html = preview.innerHTML;
-    const blob = new Blob([html], { type: 'text/html' });
-    const plainBlob = new Blob([preview.textContent], { type: 'text/plain' });
-    navigator.clipboard.write([
-      new ClipboardItem({ 'text/html': blob, 'text/plain': plainBlob })
-    ]).then(() => showToast('已复制渲染后的 HTML', 'success'))
-      .catch(() => navigator.clipboard.writeText(preview.textContent).then(() => showToast('已复制纯文本', 'success')));
+function copyOutput(){
+  if(currentMode==='md2html'){
+    const h=preview.innerHTML, b=new Blob([h],{type:'text/html'}), p=new Blob([preview.textContent],{type:'text/plain'});
+    navigator.clipboard.write([new ClipboardItem({'text/html':b,'text/plain':p})]).then(()=>showToast('已复制渲染后的 HTML','success')).catch(()=>navigator.clipboard.writeText(preview.textContent).then(()=>showToast('已复制纯文本','success')));
   } else {
-    navigator.clipboard.writeText(mdOutput.value)
-      .then(() => showToast('已复制 Markdown', 'success'))
-      .catch(() => showToast('复制失败', 'error'));
+    navigator.clipboard.writeText(mdOutput.value).then(()=>showToast('已复制 Markdown','success')).catch(()=>showToast('复制失败','error'));
   }
 }
 
-async function pasteFromClipboard() {
-  try {
-    if (currentMode === 'md2html') {
-      mdEditor.value = await navigator.clipboard.readText();
-      renderMarkdown();
-    } else if (currentMode === 'html2md') {
-      const items = await navigator.clipboard.read();
-      for (const item of items) {
-        if (item.types.includes('text/html')) {
-          richEditor.innerHTML = await (await item.getType('text/html')).text();
-          convertToMarkdown();
-          showToast('已粘贴', 'success');
-          return;
+async function pasteFromClipboard(){
+  try{
+    if(currentMode==='md2html'){
+      // Check for image first
+      try {
+        const items=await navigator.clipboard.read();
+        for(const item of items){
+          if(item.types.some(t=>t.startsWith('image/'))){
+            const imgType=item.types.find(t=>t.startsWith('image/'));
+            const blob=await item.getType(imgType);
+            const file=new File([blob],'clipboard.png',{type:imgType});
+            ocrAndInsert(file);
+            return;
+          }
         }
-      }
-      richEditor.textContent = await navigator.clipboard.readText();
-      convertToMarkdown();
+      } catch(_){}
+      // Fallback to text
+      mdEditor.value=await navigator.clipboard.readText();
+      renderMarkdown();
+    } else if(currentMode==='html2md'){
+      const items=await navigator.clipboard.read();
+      for(const item of items){if(item.types.includes('text/html')){richEditor.innerHTML=await(await item.getType('text/html')).text();convertToMarkdown();showToast('已粘贴','success');return}}
+      richEditor.textContent=await navigator.clipboard.readText();convertToMarkdown();
     }
-    showToast('已粘贴', 'success');
-  } catch(e) {
-    showToast('无法读取剪贴板，请手动粘贴', 'error');
-  }
+    showToast('已粘贴','success');
+  }catch(e){showToast('无法读取剪贴板，请手动粘贴','error')}
 }
 
-function clearAll() {
-  mdEditor.value = '';
-  preview.innerHTML = '';
-  richEditor.innerHTML = '';
-  mdOutput.value = '';
-  updateStats();
-  showToast('已清空', 'success');
-}
+function clearAll(){mdEditor.value='';preview.innerHTML='';richEditor.innerHTML='';mdOutput.value='';updateStats();showToast('已清空','success')}
 
-function loadSample() {
-  if (currentMode === 'md2html') {
-    mdEditor.value = `# Markdown 格式转换器\n\n## 功能特性\n\n这是一个 **强大** 的 Markdown 双向转换工具，支持以下功能：\n\n- ✅ Markdown → 富文本预览\n- ✅ 富文本 → Markdown 转换\n- ✅ PDF 文件解析为 Markdown\n- ✅ 导出 PDF\n- ✅ 代码高亮 & GFM 表格\n\n## 代码示例\n\n\`\`\`javascript\nfunction greet(name) {\n  return \`Hello, \${name}!\`;\n}\n\`\`\`\n\n## 表格\n\n| 功能 | 状态 | 引擎 |\n|------|------|------|\n| Markdown 渲染 | ✅ | marked.js |\n| HTML 转 MD | ✅ | Turndown |\n| PDF 解析 | ✅ | PDF.js |\n| PDF 导出 | ✅ | html2pdf.js |\n\n> 让 Markdown 的编写和转换变得简单高效。\n\n---\n\n*Markdown 格式转换器* 🚀`;
-    renderMarkdown();
-    showToast('已加载示例', 'success');
-  } else if (currentMode === 'html2md') {
-    richEditor.innerHTML = '<h1>示例富文本</h1><p>这是 <strong>加粗</strong> 和 <em>斜体</em> 文本。</p><ul><li>列表项 1</li><li>列表项 2</li></ul><blockquote><p>引用文字</p></blockquote>';
-    convertToMarkdown();
-    showToast('已加载示例', 'success');
+function loadSample(){
+  if(currentMode==='md2html'){
+    mdEditor.value='# Markdown 格式转换器\n\n## 功能特性\n\n这是一个 **强大** 的 Markdown 双向转换工具：\n\n- ✅ Markdown → 富文本预览\n- ✅ 粘贴/拖拽图片 → OCR 提取文字\n- ✅ 富文本 → Markdown\n- ✅ PDF 解析 & PDF 导出\n- ✅ 代码高亮 & GFM 表格\n\n## 代码示例\n\n```javascript\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\n```\n\n## 表格\n\n| 功能 | 引擎 |\n|------|------|\n| Markdown 渲染 | marked.js |\n| HTML 转 MD | Turndown |\n| 图片 OCR | Tesseract.js |\n| PDF 解析 | PDF.js |\n\n> 💡 直接粘贴截图即可 OCR 识别文字\n\n---\n\n*Markdown 格式转换器* 🚀';
+    renderMarkdown();showToast('已加载示例','success');
+  } else if(currentMode==='html2md'){
+    richEditor.innerHTML='<h1>示例富文本</h1><p>这是 <strong>加粗</strong> 和 <em>斜体</em> 文本。</p><ul><li>列表项 1</li><li>列表项 2</li></ul><blockquote><p>引用文字</p></blockquote>';
+    convertToMarkdown();showToast('已加载示例','success');
   }
 }
 
 // ===== PDF Export =====
-function exportPDF() {
-  showToast('正在生成 PDF...', 'success');
-  const container = document.createElement('div');
-  container.style.cssText = 'padding:40px 48px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;color:#1a1a1a;line-height:1.8;max-width:780px;';
-
-  let content = '';
-  if (currentMode === 'md2html') {
-    content = preview.innerHTML;
-  } else {
-    content = marked.parse(mdOutput.value);
-  }
-
-  container.innerHTML = `<style>
-    h1{font-size:24px;font-weight:700;margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid #e5e7eb;color:#111}
-    h2{font-size:20px;font-weight:600;margin:24px 0 12px;padding-bottom:6px;border-bottom:1px solid #e5e7eb;color:#111}
-    h3{font-size:16px;font-weight:600;margin:20px 0 8px;color:#333}
-    p{margin:8px 0;font-size:14px}
-    strong{font-weight:600}
-    blockquote{margin:12px 0;padding:8px 16px;border-left:4px solid #6366f1;background:#f5f3ff;border-radius:0 8px 8px 0}
-    code{background:#f3f4f6;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px}
-    pre{background:#f8f9fa;border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin:12px 0;overflow-x:auto}
-    pre code{background:none;padding:0;font-size:12px}
-    table{border-collapse:collapse;width:100%;margin:12px 0}
-    th,td{padding:8px 12px;border:1px solid #e5e7eb;text-align:left;font-size:13px}
-    th{background:#f9fafb;font-weight:600}
-    ul,ol{margin:8px 0;padding-left:24px}
-    li{margin:4px 0;font-size:14px}
-    hr{border:none;height:1px;background:#e5e7eb;margin:20px 0}
-    a{color:#6366f1;text-decoration:none}
-    img{max-width:100%;border-radius:8px}
-  </style>${content}`;
-
-  document.body.appendChild(container);
-  html2pdf().set({
-    margin: [12, 12, 12, 12],
-    filename: 'markdown-export.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, logging: false },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-  }).from(container).save().then(() => {
-    document.body.removeChild(container);
-    showToast('PDF 已导出', 'success');
-  }).catch(err => {
-    document.body.removeChild(container);
-    showToast('PDF 导出失败: ' + err.message, 'error');
-  });
+function exportPDF(){
+  showToast('正在生成 PDF...','success');
+  const c=document.createElement('div');
+  c.style.cssText='padding:40px 48px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;color:#1a1a1a;line-height:1.8;max-width:780px';
+  let content=currentMode==='md2html'?preview.innerHTML:marked.parse(mdOutput.value);
+  c.innerHTML=`<style>h1{font-size:24px;font-weight:700;margin:0 0 16px;padding-bottom:8px;border-bottom:2px solid #e5e7eb;color:#111}h2{font-size:20px;font-weight:600;margin:24px 0 12px;padding-bottom:6px;border-bottom:1px solid #e5e7eb;color:#111}h3{font-size:16px;font-weight:600;margin:20px 0 8px;color:#333}p{margin:8px 0;font-size:14px}strong{font-weight:600}blockquote{margin:12px 0;padding:8px 16px;border-left:4px solid #6366f1;background:#f5f3ff;border-radius:0 8px 8px 0}code{background:#f3f4f6;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px}pre{background:#f8f9fa;border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin:12px 0;overflow-x:auto}pre code{background:none;padding:0;font-size:12px}table{border-collapse:collapse;width:100%;margin:12px 0}th,td{padding:8px 12px;border:1px solid #e5e7eb;text-align:left;font-size:13px}th{background:#f9fafb;font-weight:600}ul,ol{margin:8px 0;padding-left:24px}li{margin:4px 0;font-size:14px}hr{border:none;height:1px;background:#e5e7eb;margin:20px 0}a{color:#6366f1;text-decoration:none}img{max-width:100%;border-radius:8px}</style>`+content;
+  document.body.appendChild(c);
+  html2pdf().set({margin:[12,12,12,12],filename:'markdown-export.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true,logging:false},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['avoid-all','css','legacy']}}).from(c).save().then(()=>{document.body.removeChild(c);showToast('PDF 已导出','success')}).catch(e=>{document.body.removeChild(c);showToast('PDF 导出失败: '+e.message,'error')});
 }
 
 // ===== Toast =====
-function showToast(msg, type = 'success') {
-  const toast = document.getElementById('toast');
-  toast.className = 'toast ' + type;
-  toast.innerHTML = (type === 'success' ? '✅' : '❌') + ' ' + msg;
-  toast.classList.add('show');
-  clearTimeout(toast._timer);
-  toast._timer = setTimeout(() => toast.classList.remove('show'), 2500);
-}
+function showToast(msg,type='success'){const t=document.getElementById('toast');t.className='toast '+type;t.innerHTML=(type==='success'?'✅':'❌')+' '+msg;t.classList.add('show');clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.remove('show'),2500)}
 
 // ===== Resizable Divider =====
-const divider = document.getElementById('divider');
-const leftPanel = document.getElementById('left-panel');
-const rightPanel = document.getElementById('right-panel');
-let isDragging = false;
-
-divider.addEventListener('mousedown', () => {
-  isDragging = true;
-  divider.classList.add('dragging');
-  document.body.style.cursor = 'col-resize';
-  document.body.style.userSelect = 'none';
-});
-
-document.addEventListener('mousemove', (e) => {
-  if (!isDragging) return;
-  const rect = document.querySelector('.main').getBoundingClientRect();
-  const pct = Math.max(20, Math.min(80, ((e.clientX - rect.left) / rect.width) * 100));
-  leftPanel.style.flex = 'none';
-  leftPanel.style.width = pct + '%';
-  rightPanel.style.flex = 'none';
-  rightPanel.style.width = (100 - pct) + '%';
-});
-
-document.addEventListener('mouseup', () => {
-  if (isDragging) {
-    isDragging = false;
-    divider.classList.remove('dragging');
-    document.body.style.cursor = '';
-    document.body.style.userSelect = '';
-  }
-});
+const divider=document.getElementById('divider'),leftPanel=document.getElementById('left-panel'),rightPanel=document.getElementById('right-panel');
+let isDragging=false;
+divider.addEventListener('mousedown',()=>{isDragging=true;divider.classList.add('dragging');document.body.style.cursor='col-resize';document.body.style.userSelect='none'});
+document.addEventListener('mousemove',e=>{if(!isDragging)return;const r=document.querySelector('.main').getBoundingClientRect(),p=Math.max(20,Math.min(80,((e.clientX-r.left)/r.width)*100));leftPanel.style.flex='none';leftPanel.style.width=p+'%';rightPanel.style.flex='none';rightPanel.style.width=(100-p)+'%'});
+document.addEventListener('mouseup',()=>{if(isDragging){isDragging=false;divider.classList.remove('dragging');document.body.style.cursor='';document.body.style.userSelect=''}});
 
 // ===== Keyboard Shortcuts =====
-document.addEventListener('keydown', (e) => {
-  if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); exportPDF(); }
-  if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'c') { e.preventDefault(); copyOutput(); }
+document.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key==='s'){e.preventDefault();exportPDF()}
+  if((e.metaKey||e.ctrlKey)&&e.shiftKey&&e.key==='c'){e.preventDefault();copyOutput()}
 });
 
-// ===== Init =====
 updateStats();
 </script>
 </body>
